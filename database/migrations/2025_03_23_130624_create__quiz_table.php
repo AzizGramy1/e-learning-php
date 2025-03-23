@@ -8,19 +8,29 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('quiz', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('cours_id'); // ID du cours (sans clé étrangère)
-            $table->string('titre');               // Titre du quiz
-            $table->text('description')->nullable(); // Description du quiz (optionnelle)
-            $table->timestamps();
+            $table->id(); // Colonne ID auto-incrémentée
+            $table->unsignedBigInteger('cours_id'); // Clé étrangère vers la table `cours`
+            $table->string('titre'); // Titre du quiz
+            $table->text('description')->nullable(); // Description du quiz (peut être nulle)
+            $table->timestamps(); // Colonnes `created_at` et `updated_at`
+
+            // Ajout des clés étrangères
+            $table->foreign('cours_id')->references('id')->on('course')->onDelete('cascade');
         });
     }
 
-    public function down(): void
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
         Schema::dropIfExists('quiz');
     }

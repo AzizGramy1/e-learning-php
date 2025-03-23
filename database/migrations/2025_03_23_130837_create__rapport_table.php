@@ -8,20 +8,30 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('rapport', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('utilisateur_id'); // ID de l'utilisateur (sans clé étrangère)
-            $table->string('titre');                     // Titre du rapport
-            $table->text('contenu');                     // Contenu du rapport
-            $table->dateTime('date_generation');         // Date de génération du rapport
-            $table->timestamps();
+            $table->id(); // Colonne ID auto-incrémentée
+            $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
+            $table->string('titre'); // Titre du rapport
+            $table->text('contenu'); // Contenu du rapport
+            $table->dateTime('date_génération'); // Date de génération du rapport
+            $table->timestamps(); // Colonnes `created_at` et `updated_at`
+
+            // Ajout des clés étrangères
+            $table->foreign('utilisateur_id')->references('id')->on('user')->onDelete('cascade');
         });
     }
 
-    public function down(): void
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
         Schema::dropIfExists('rapport');
     }

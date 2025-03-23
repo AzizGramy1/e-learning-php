@@ -17,5 +17,23 @@ class Message extends Model
         'contenu',        // Contenu du message
     ];
 
-    
+    /**
+     * Relation avec le forum.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function forum()
+    {
+        return $this->belongsTo(Forum::class, 'forum_id');
+    }
+
+    /**
+     * Relation avec l'utilisateur qui a posté le message.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function utilisateur()
+    {
+        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
+    }
 }

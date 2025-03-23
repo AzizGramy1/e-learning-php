@@ -8,18 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('abonnement', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('utilisateur_id');
-            $table->unsignedBigInteger('cours_id');
-            $table->date('date_début');
-            $table->date('date_fin')->nullable();
-            $table->enum('statut', ['actif', 'expiré', 'annulé'])->default('actif');
-            $table->timestamps();
+        Schema::create('abonnements', function (Blueprint $table) {
+            $table->id(); // Colonne ID auto-incrémentée
+            $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
+            $table->unsignedBigInteger('cours_id'); // Clé étrangère vers la table `cours`
+            $table->dateTime('date_début'); // Date de début de l'abonnement
+            $table->dateTime('date_fin'); // Date de fin de l'abonnement
+            $table->string('statut')->default('actif'); // Statut de l'abonnement (par défaut 'actif')
+            $table->timestamps(); // Colonnes `created_at` et `updated_at`
 
-            // Décommenter ces lignes si vous ajoutez des clés étrangères dans le futur
-            // $table->foreign('utilisateur_id')->references('id')->on('utilisateurs')->onDelete('cascade');
-            // $table->foreign('cours_id')->references('id')->on('cours')->onDelete('cascade');
+            // Ajout des clés étrangères
+            $table->foreign('utilisateur_id')->references('id')->on('user')->onDelete('cascade');
+            $table->foreign('cours_id')->references('id')->on('course')->onDelete('cascade');
         });
     }
 

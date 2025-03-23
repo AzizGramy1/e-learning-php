@@ -8,20 +8,31 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('certificat', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('utilisateur_id'); // ID de l'utilisateur (sans clé étrangère)
-            $table->unsignedBigInteger('cours_id');       // ID du cours (sans clé étrangère)
-            $table->dateTime('date_emission');            // Date d'émission du certificat
-            $table->string('code_certificat')->unique();  // Code unique du certificat
-            $table->timestamps();
+            $table->id(); // Colonne ID auto-incrémentée
+            $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
+            $table->unsignedBigInteger('cours_id'); // Clé étrangère vers la table `cours`
+            $table->dateTime('date_émission'); // Date d'émission du certificat
+            $table->string('code_certificat')->unique(); // Code unique du certificat
+            $table->timestamps(); // Colonnes `created_at` et `updated_at`
+
+            // Ajout des clés étrangères
+            $table->foreign('utilisateur_id')->references('id')->on('user')->onDelete('cascade');
+            $table->foreign('cours_id')->references('id')->on('course')->onDelete('cascade');
         });
     }
 
-    public function down(): void
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
         Schema::dropIfExists('certificat');
     }
