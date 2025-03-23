@@ -19,22 +19,5 @@ class Paiement extends Model
         'méthode_paiement', // Méthode de paiement (ex. carte de crédit, PayPal)
     ];
 
-    /**
-     * Les attributs qui doivent être convertis en types natifs.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'date_paiement' => 'datetime', // Convertit la date de paiement en objet Carbon
-    ];
-
-    /**
-     * Relation avec l'utilisateur.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function utilisateur()
-    {
-        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
-    }
+    
 }

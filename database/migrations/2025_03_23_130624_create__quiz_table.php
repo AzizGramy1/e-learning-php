@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('quizzes', function (Blueprint $table) {
+        Schema::create('quiz', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('cours_id'); // ID du cours (sans clé étrangère)
+            $table->string('titre');               // Titre du quiz
+            $table->text('description')->nullable(); // Description du quiz (optionnelle)
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('quizzes');
+        Schema::dropIfExists('quiz');
     }
 };

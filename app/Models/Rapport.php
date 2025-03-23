@@ -18,23 +18,6 @@ class Rapport extends Model
         'date_génération', // Date de génération du rapport
     ];
 
-    /**
-     * Les attributs qui doivent être convertis en types natifs.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'date_génération' => 'datetime', // Convertit la date de génération en objet Carbon
-    ];
-
-    /**
-     * Relation avec l'utilisateur.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function utilisateur()
-    {
-        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
-    }
+    
 
 }

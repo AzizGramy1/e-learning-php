@@ -6,22 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('forums', function (Blueprint $table) {
+        Schema::create('course', function (Blueprint $table) {
             $table->id();
+            $table->string('titre');
+            $table->text('description');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('forums');
+        Schema::dropIfExists('course');
     }
 };
