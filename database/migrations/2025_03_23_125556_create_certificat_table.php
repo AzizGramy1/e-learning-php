@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps(); // Colonnes `created_at` et `updated_at`
 
             // Ajout des clés étrangères
-            $table->foreign('utilisateur_id')->references('id')->on('user')->onDelete('cascade');
+            $table->foreign('utilisateur_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('cours_id')->references('id')->on('course')->onDelete('cascade');
         });
     }

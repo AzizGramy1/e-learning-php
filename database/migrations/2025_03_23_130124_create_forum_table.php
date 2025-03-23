@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Ajout des clés étrangères
             $table->foreign('cours_id')->references('id')->on('course')->onDelete('cascade');
-            $table->foreign('utilisateur_id')->references('id')->on('user')->onDelete('cascade');
+            $table->foreign('utilisateur_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
