@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('paiement', function (Blueprint $table) {
+        Schema::create('paiements', function (Blueprint $table) {
             $table->id(); // Colonne ID auto-incrémentée
             $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
             $table->decimal('montant', 10, 2); // Montant du paiement (10 chiffres au total, 2 décimales)
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('paiement');
+        Schema::dropIfExists('paiements');
     }
 };

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('message', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->id(); // Colonne ID auto-incrémentée
             $table->unsignedBigInteger('forum_id'); // Clé étrangère vers la table `forums`
             $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamps(); // Colonnes `created_at` et `updated_at`
 
             // Ajout des clés étrangères
-            $table->foreign('forum_id')->references('id')->on('forum')->onDelete('cascade');
+            $table->foreign('forum_id')->references('id')->on('forums')->onDelete('cascade');
             $table->foreign('utilisateur_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('message');
+        Schema::dropIfExists('messages');
     }
 };

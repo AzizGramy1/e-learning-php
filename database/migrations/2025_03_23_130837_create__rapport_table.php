@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rapport', function (Blueprint $table) {
+        Schema::create('rapports', function (Blueprint $table) {
             $table->id(); // Colonne ID auto-incrémentée
             $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
             $table->string('titre'); // Titre du rapport
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rapport');
+        Schema::dropIfExists('rapports');
     }
 };

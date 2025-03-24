@@ -19,12 +19,12 @@ return new class extends Migration
 
             // Ajout des clés étrangères
             $table->foreign('utilisateur_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('cours_id')->references('id')->on('course')->onDelete('cascade');
+            $table->foreign('cours_id')->references('id')->on('courses')->onDelete('cascade');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('abonnement');
+        Schema::dropIfExists('abonnements');
     }
 };

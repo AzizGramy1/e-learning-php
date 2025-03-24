@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('certificat', function (Blueprint $table) {
+        Schema::create('certificats', function (Blueprint $table) {
             $table->id(); // Colonne ID auto-incrémentée
             $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
             $table->unsignedBigInteger('cours_id'); // Clé étrangère vers la table `cours`
@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Ajout des clés étrangères
             $table->foreign('utilisateur_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('cours_id')->references('id')->on('course')->onDelete('cascade');
+            $table->foreign('cours_id')->references('id')->on('courses')->onDelete('cascade');
         });
     }
 
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('certificat');
+        Schema::dropIfExists('certificats');
     }
 };
