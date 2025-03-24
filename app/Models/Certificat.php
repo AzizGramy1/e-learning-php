@@ -46,4 +46,6 @@ class Certificat extends Model
     {
         return $this->belongsTo(Cours::class, 'cours_id');
     }
+
+    
 }
