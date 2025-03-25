@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Course;
 
 class CoursController extends Controller
 {
@@ -11,7 +12,7 @@ class CoursController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(Course::all());
     }
 
     /**
@@ -27,7 +28,15 @@ class CoursController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'titre' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string',
+        ]);
+
+        $cours = Course::create($validatedData);
+
+        return response()->json($cours, 201);
     }
 
     /**
@@ -35,7 +44,8 @@ class CoursController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cours = Course::findOrFail($id);
+        return response()->json($cours);
     }
 
     /**
@@ -43,7 +53,17 @@ class CoursController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $cours = Course::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'titre' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string',
+        ]);
+
+        $cours->update($validatedData);
+
+        return response()->json($cours);
     }
 
     /**
@@ -59,6 +79,7 @@ class CoursController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Course::destroy($id);
+        return response()->json(['message' => 'Cours supprimé avec succès']);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Certificat;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
 class CertificatController extends Controller
@@ -27,8 +29,19 @@ class CertificatController extends Controller
      */
     public function store(Request $request)
     {
-        $certificat = Certificat::create($request->all());
-        return response()->json($certificat, 201);
+        try {
+            $validated = $request->validate([
+                'utilisateur_id' => 'required|exists:users,id',
+                'cours_id' => 'required|exists:courses,id',
+                'date_émission' => 'required|date',
+                'code_certificat' => 'required|string|unique:certificats,code_certificat',
+            ]);
+
+            $certificat = Certificat::create($validated);
+            return response()->json($certificat, 201);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
     }
 
     /**
@@ -36,7 +49,11 @@ class CertificatController extends Controller
      */
     public function show(string $id)
     {
-        return response()->json(Certificat::findOrFail($id));
+        $certificat = Certificat::find($id);
+        if (!$certificat) {
+            return response()->json(['message' => 'Certificat non trouvé'], 404);
+        }
+        return response()->json($certificat);
     }
 
     /**
@@ -52,9 +69,24 @@ class CertificatController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $certificat = Certificat::findOrFail($id);
-        $certificat->update($request->all());
-        return response()->json($certificat);
+        try {
+            $certificat = Certificat::find($id);
+            if (!$certificat) {
+                return response()->json(['message' => 'Certificat non trouvé'], 404);
+            }
+
+            $validated = $request->validate([
+                'utilisateur_id' => 'sometimes|exists:users,id',
+                'cours_id' => 'sometimes|exists:courses,id',
+                'date_émission' => 'sometimes|date',
+                'code_certificat' => 'sometimes|string|unique:certificats,code_certificat,' . $id,
+            ]);
+
+            $certificat->update($validated);
+            return response()->json($certificat);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
     }
 
     /**
@@ -62,7 +94,13 @@ class CertificatController extends Controller
      */
     public function destroy(string $id)
     {
-        Certificat::destroy($id);
-        return response()->json(['message' => 'Certificat supprimé']);
+        $certificat = Certificat::find($id);
+        if (!$certificat) {
+            return response()->json(['message' => 'Certificat non trouvé'], 404);
+        }
+        
+        $certificat->delete();
+        return response()->json(['message' => 'Certificat supprimé avec succès']);
+
     }
 }
