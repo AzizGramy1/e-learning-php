@@ -11,7 +11,23 @@ class QuizController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $quizzes = Quiz::with(['questions.answers', 'createdBy'])
+                        ->latest()
+                        ->paginate(10);
+
+            return response()->json([
+                'success' => true,
+                'data' => $quizzes
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching quizzes: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error'
+            ], 500);
+        }
     }
 
     /**
@@ -56,7 +72,7 @@ class QuizController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     */
+     */ 
     public function destroy(string $id)
     {
         //

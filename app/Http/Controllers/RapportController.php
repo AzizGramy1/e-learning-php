@@ -61,4 +61,11 @@ class RapportController extends Controller
     {
         //
     }
+
+
+    public function generatePdf($id)
+{
+    $rapport = Rapport::findOrFail($id);
+    return PDF::loadView('rapports.show', compact('rapport'))->download();
+}
 }
