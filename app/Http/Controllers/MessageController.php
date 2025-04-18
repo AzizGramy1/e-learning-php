@@ -160,4 +160,52 @@ class MessageController extends Controller
             ], 500);
         }
     }
+
+
+    public function messagesByForum($forumId)
+{
+    try {
+        $messages = Message::with(['forum', 'utilisateur'])
+                    ->where('forum_id', $forumId)
+                    ->latest()
+                    ->paginate(10);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $messages
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Erreur récupération messages par forum: ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Erreur serveur'
+        ], 500);
+    }
+}
+
+/**
+ * Récupère les messages d'un utilisateur spécifique
+ */
+public function messagesByUser($userId)
+{
+    try {
+        $messages = Message::with(['forum', 'utilisateur'])
+                    ->where('utilisateur_id', $userId)
+                    ->latest()
+                    ->paginate(10);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $messages
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Erreur récupération messages par utilisateur: ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Erreur serveur'
+        ], 500);
+    }
+}
 }

@@ -8,87 +8,102 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\QuizController; 
 use App\Http\Controllers\RapportController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-/*
-|--------------------------------------------------------------------------
-| API Routes (version corrigée)
-|--------------------------------------------------------------------------
-*/
-
-// Version 1 : Routes API basiques (sans auth)
-Route::prefix('api')->group(function () {
-    Route::apiResource('certificats', CertificatController::class);
-
-    // Nouvelles routes pour les cours
-    Route::apiResource('cours', CoursController::class);
-
-    
-     // Routes pour les messages
-    Route::apiResource('messages', MessageController::class);
-    Route::apiResource('messagesEditCreate', MessageController::class)->except(['create', 'edit']);
-    // Pour obtenir les messages d'un forum spécifique
-    Route::get('forums/{forum}/messages', [MessageController::class, 'forumMessages']);
 
 
+//Routes pour les courses
+
+Route::get('/coursView', function () {
+    return view('coursView');
+});
 
 
-      // Routes pour les quizzes
-    Route::apiResource('quizzes', QuizController::class); 
-
-      //Routes pour les rapports
-    Route::apiResource('rapports', RapportController::class);   
-
-      
-
-    
-    Route::get('forums/{forum}/messages', [MessageController::class, 'forumMessages']);
+Route::get('/userView', function () {
+    return view('userView');
+});
 
 
+Route::get('/menuControllers', function () {
+    return view('menuControllers');
+});
+
+Route::get('/certificatView', function () {
+    return view('certificatView');
+});
+
+Route::get('/forumView', function () {
+    return view('forumView');
+});
 
 
-    // Authentification
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::prefix('api')->group(function() {
 
-// Routes protégées
-Route::middleware(['auth:sanctum'])->group(function () {
-    
-    // Gestion du profil utilisateur
-    Route::prefix('profile')->group(function () {
-        Route::get('/', [UserController::class, 'showProfile']);
-        Route::put('/', [UserController::class, 'updateProfile']);
-        Route::delete('/', [UserController::class, 'deleteProfile']);
-    });
+        // Routes CRUD pour les cours
+        Route::get('/cours', [CoursController::class, 'index']);          // GET /api/cours
+        Route::post('/cours', [CoursController::class, 'store']);         // POST /api/cours
+        Route::get('/cours/{id}', [CoursController::class, 'show']);      // GET /api/cours/1
+        Route::put('/cours/{id}', [CoursController::class, 'update']);    // PUT /api/cours/1
+        Route::delete('/cours/{id}', [CoursController::class, 'destroy']);// DELETE /api/cours/1
 
-    // Administration des utilisateurs (admin seulement)
-    Route::middleware(['admin'])->prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index']);
-        Route::post('/', [UserController::class, 'store']);
-        Route::get('/{user}', [UserController::class, 'show']);
-        Route::put('/{user}', [UserController::class, 'update']);
-        Route::delete('/{user}', [UserController::class, 'destroy']);
+
+
+        Route::get('/users', [UserController::class, 'index']);
+        Route::post('/users', [UserController::class, 'store']);
+        Route::get('/users/{id}', [UserController::class, 'show']);
+        Route::put('/users/{id}', [UserController::class, 'update']);
+        Route::delete('/users/{id}', [UserController::class, 'destroy']);
         
-        // Relations
-        Route::get('/{user}/certificats', [UserController::class, 'getUserCertificats']);
-        Route::get('/{user}/messages', [UserController::class, 'getUserMessages']);
-        Route::get('/{user}/paiements', [UserController::class, 'getUserPaiements']);
-        Route::get('/{user}/rapports', [UserController::class, 'getUserRapports']);
-    });
+        // Routes de profil
+        Route::get('/profile', [UserController::class, 'profile']);
+        Route::put('/profile', [UserController::class, 'updateProfile']);
+        
+        // Routes des relations
+        Route::get('/users/{userId}/certificats', [UserController::class, 'getUserCertificats']);
+        Route::get('/users/{userId}/messages', [UserController::class, 'getUserMessages']);
+        Route::get('/users/{userId}/paiements', [UserController::class, 'getUserPaiements']);
+        Route::get('/users/{userId}/rapports', [UserController::class, 'getUserRapports']);
 
-    // Déconnexion
-    Route::post('/logout', [AuthController::class, 'logout']);
+
+
+        // Routes CRUD pour les certificats
+        Route::get('/certificats', [CertificatController::class, 'index']);
+        Route::post('/certificats', [CertificatController::class, 'store']);
+        Route::get('/certificats/{id}', [CertificatController::class, 'show']);
+        Route::put('/certificats/{id}', [CertificatController::class, 'update']);
+        Route::patch('/certificats/{id}', [CertificatController::class, 'update']);
+        Route::delete('/certificats/{id}', [CertificatController::class, 'destroy']);
+
+        // Routes supplémentaires pour les certificats
+        Route::get('/cours/{courseId}/certificats', [CertificatController::class, 'byCourse']);
+        Route::get('/users/{userId}/certificats', [CertificatController::class, 'byUser']);
+
+        // Routes pour les autres contrôleurs (message, paiement, quiz, rapport)
+        Route::apiResource('messages', MessageController::class);
+        Route::apiResource('paiements', PaiementController::class);
+        Route::apiResource('quizzes', QuizController::class);
+        Route::apiResource('rapports', RapportController::class);
+
+
+        // Routes CRUD de base
+        Route::get('/forums', [ForumController::class, 'index']);
+        Route::post('/forums', [ForumController::class, 'store']);
+        Route::get('/forums/{id}', [ForumController::class, 'show']);
+        Route::put('/forums/{id}', [ForumController::class, 'update']);
+        Route::delete('/forums/{id}', [ForumController::class, 'destroy']);
+        
+        // Routes supplémentaires
+        Route::get('/cours/{coursId}/forums', [ForumController::class, 'byCours']);
+        Route::get('/utilisateurs/{utilisateurId}/forums', [ForumController::class, 'byUtilisateur']);
+
+
+    
+
 });
 
-});
 
 
 
