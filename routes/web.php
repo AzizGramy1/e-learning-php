@@ -40,6 +40,11 @@ Route::get('/forumView', function () {
 });
 
 
+Route::get('/backendWelcomePage', function () {
+    return view('startView');
+});
+
+
 Route::prefix('api')->group(function() {
 
         // Routes CRUD pour les cours
@@ -98,6 +103,17 @@ Route::prefix('api')->group(function() {
         // Routes supplémentaires
         Route::get('/cours/{coursId}/forums', [ForumController::class, 'byCours']);
         Route::get('/utilisateurs/{utilisateurId}/forums', [ForumController::class, 'byUtilisateur']);
+
+
+        
+        
+        // Routes spécifiques pour les paiements
+        Route::get('/paiements', [PaiementController::class, 'apiIndex']);
+        Route::post('/paiements', [PaiementController::class, 'store']);
+        Route::get('/paiements/{id}', [PaiementController::class, 'apiShow']);
+        Route::put('/paiements/{id}', [PaiementController::class, 'update']);
+        Route::delete('/paiements/{id}', [PaiementController::class, 'destroy']);
+        Route::get('/users/{userId}/paiements', [PaiementController::class, 'apiIndex']); // Liste des paiements par utilisateur
 
 
     
