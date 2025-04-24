@@ -3,1110 +3,505 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Learning Dark Template</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>E-Learning - Plateforme d'Apprentissage</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        :root {
-            --primary-color: #6c5ce7;
-            --secondary-color: #a29bfe;
-            --dark-color: #2d3436;
-            --darker-color: #1e272e;
-            --light-color: #dfe6e9;
-            --accent-color: #00cec9;
-            --text-color: #f5f6fa;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-
-
-        .hero {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: 0 5%;
-    background: 
-        linear-gradient(to right, rgba(30, 39, 46, 0.9), rgba(45, 52, 54, 0.7)),
-        url('https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80') no-repeat center center/cover;
-    position: relative;
-    overflow: hidden;
-}
-
-.hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
-    animation: pulse 15s infinite alternate;
-    z-index: 0;
-}
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--darker-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Header Styles */
-        header {
-            background-color: var(--dark-color);
-            box-shadow: var(--shadow);
-            position: fixed;
-            width: 100%;
-            z-index: 1000;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo i {
-            margin-right: 0.5rem;
-            color: var(--accent-color);
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-
-        .nav-links li {
-            margin-left: 2rem;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 500;
-            position: relative;
-            padding: 0.5rem 0;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--accent-color);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent-color);
-        }
-
-        .dark-mode-toggle {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin-left: 2rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 0 5%;
-            background: linear-gradient(135deg, var(--darker-color) 0%, var(--dark-color) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
-            animation: pulse 15s infinite alternate;
-            z-index: 0;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: translate(0, 0);
-            }
-            50% {
-                transform: translate(25%, 25%);
-            }
-            100% {
-                transform: translate(0, 0);
-            }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 600px;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-            animation: fadeInUp 1s ease;
-        }
-
-        .hero h1 span {
-            color: var(--primary-color);
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            animation: fadeInUp 1s ease 0.3s forwards;
-            opacity: 0;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
-            transition: all 0.3s ease;
-            animation: fadeInUp 1s ease 0.6s forwards;
-            opacity: 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
-        }
-
-        .cta-button::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s ease;
-        }
-
-        .cta-button:hover::after {
-            transform: translateX(100%);
-        }
-
-        /* Courses Section */
-        .section {
-            padding: 5rem 5%;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
-            position: relative;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            display: inline-block;
-            position: relative;
-        }
-
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background-color: var(--accent-color);
-        }
-
-        /* Image Slider */
-        .slider-container {
-            position: relative;
-            max-width: 1200px;
-            margin: 0 auto;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-        }
-
-        .slider {
-            display: flex;
-            transition: transform 0.5s ease;
-            height: 400px;
-        }
-
-        .slide {
-            min-width: 100%;
-            position: relative;
-        }
-
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .slide-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-            padding: 2rem;
-            color: white;
-        }
-
-        .slide-content h3 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .slide-content p {
-            opacity: 0.9;
-        }
-
-        .slider-nav {
-            position: absolute;
-            top: 50%;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            transform: translateY(-50%);
-            padding: 0 1rem;
-            z-index: 10;
-        }
-
-        .slider-nav button {
-            background-color: rgba(255, 255, 255, 0.3);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .slider-nav button:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .slider-dots {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 10;
-        }
-
-        .slider-dots button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: none;
-            background-color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .slider-dots button.active {
-            background-color: var(--accent-color);
-            transform: scale(1.2);
-        }
-
-        /* Features Section */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background-color: var(--dark-color);
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Stats Section */
-        .stats {
-            background-color: var(--dark-color);
-            padding: 4rem 0;
-            text-align: center;
-        }
-
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .stat-item {
-            padding: 1rem 2rem;
-            margin: 1rem;
-            position: relative;
-        }
-
-        .stat-item::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 50%;
-            width: 1px;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-item:last-child::after {
-            display: none;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-
-        /* Testimonials */
-        .testimonials {
-            background-color: var(--darker-color);
-            padding: 5rem 0;
-        }
-
-        .testimonial-slider {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .testimonial {
-            background-color: var(--dark-color);
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            margin: 0 1rem;
-            text-align: center;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.5s ease;
-            position: absolute;
-            width: 100%;
-        }
-
-        .testimonial.active {
-            opacity: 1;
-            transform: scale(1);
-            position: relative;
-        }
-
-        .testimonial-content {
-            font-style: italic;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .testimonial-content::before,
-        .testimonial-content::after {
-            content: '"';
-            font-size: 3rem;
-            color: var(--primary-color);
-            opacity: 0.3;
-            position: absolute;
-        }
-
-        .testimonial-content::before {
-            top: -20px;
-            left: -10px;
-        }
-
-        .testimonial-content::after {
-            bottom: -40px;
-            right: -10px;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .author-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 1rem;
-            border: 3px solid var(--primary-color);
-        }
-
-        .author-info h4 {
-            font-size: 1.2rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .author-info p {
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-
-        .testimonial-nav {
-            display: flex;
-            justify-content: center;
-            margin-top: 2rem;
-            gap: 10px;
-        }
-
-        .testimonial-nav button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: none;
-            background-color: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .testimonial-nav button.active {
-            background-color: var(--accent-color);
-            transform: scale(1.2);
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--dark-color);
-            padding: 3rem 5%;
-            margin-top: 3rem;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-column h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent-color);
-            position: relative;
-            display: inline-block;
-        }
-
-        .footer-column h3::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 50%;
-            height: 2px;
-            background-color: var(--primary-color);
-        }
-
-        .footer-column ul {
-            list-style: none;
-        }
-
-        .footer-column ul li {
-            margin-bottom: 0.8rem;
-        }
-
-        .footer-column ul li a {
-            color: var(--text-color);
-            text-decoration: none;
-            opacity: 0.8;
-            transition: all 0.3s ease;
-        }
-
-        .footer-column ul li a:hover {
-            opacity: 1;
-            color: var(--accent-color);
-            padding-left: 5px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--darker-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background-color: var(--primary-color);
-            transform: translateY(-3px);
-        }
-
-        .copyright {
-            text-align: center;
-            margin-top: 3rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.7;
-        }
-
-        /* Animations */
+        /* Custom animations */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
         }
-
-        .animate-on-scroll.animated {
-            opacity: 1;
-            transform: translateY(0);
+        .glow-on-hover {
+            transition: all 0.3s ease;
         }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .nav-links {
-                position: fixed;
-                top: 70px;
-                left: -100%;
-                width: 100%;
-                height: calc(100vh - 70px);
-                background-color: var(--dark-color);
-                flex-direction: column;
-                align-items: center;
-                padding-top: 2rem;
-                transition: left 0.3s ease;
-            }
-
-            .nav-links.active {
-                left: 0;
-            }
-
-            .nav-links li {
-                margin: 1rem 0;
-            }
-
-            .hamburger {
-                display: block;
-                cursor: pointer;
-                font-size: 1.5rem;
-            }
-
-            .stat-item::after {
-                display: none;
-            }
-
-            .stat-item {
-                width: 100%;
-                text-align: center;
-            }
+        .glow-on-hover:hover {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
         }
-
-        /* Hamburger menu (hidden by default) */
-        .hamburger {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            cursor: pointer;
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .btn-press {
+            transition: all 0.2s ease;
+        }
+        .btn-press:active {
+            transform: scale(0.95);
+        }
+        .menu-item {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            perspective: 1000px;
+        }
+        .menu-item:hover {
+            transform: translateY(-8px) rotateX(10deg);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+        }
+        .menu-item:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        }
+        .text-gradient {
+            background: linear-gradient(90deg, #3B82F6, #10B981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
     </style>
 </head>
-<body>
-    <header>
-        <a href="#" class="logo"><i class="fas fa-graduation-cap"></i>EduDark</a>
-        
-        <button class="hamburger">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <ul class="nav-links">
-            <li><a href="#">Accueil</a></li>
-            <li><a href="#courses">Cours</a></li>
-            <li><a href="#features">Fonctionnalités</a></li>
-            <li><a href="#testimonials">Témoignages</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li>
-                <button class="dark-mode-toggle" id="darkModeToggle">
-                    <i class="fas fa-moon"></i>
+<body class="gradient-bg text-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 bg-opacity-90 backdrop-filter backdrop-blur-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                </svg>
+                <span class="text-2xl font-bold text-gradient">E-Learning</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="text-gray-300 hover:text-white transition-colors duration-300">Accueil</a>
+                <a href="#" class="text-gray-300 hover:text-white transition-colors duration-300">Cours</a>
+                <a href="#" class="text-gray-300 hover:text-white transition-colors duration-300">Formateurs</a>
+                <a href="#" class="text-gray-300 hover:text-white transition-colors duration-300">À propos</a>
+                <a href="#" class="text-gray-300 hover:text-white transition-colors duration-300">Contact</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg glow-on-hover btn-press transition-all duration-300">
+                    Connexion
                 </button>
-            </li>
-        </ul>
-    </header>
+                <button class="md:hidden text-gray-300 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Apprenez sans limites avec <span>EduDark</span></h1>
-            <p>Découvrez notre plateforme d'e-learning innovante avec des cours de qualité, des enseignants experts et une communauté bienveillante.</p>
-            <a href="#" class="cta-button">Commencer maintenant</a>
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden">
+        <div class="container mx-auto px-4 py-20 md:py-32 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-12 md:mb-0 animate__animated animate__fadeInLeft">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                    Apprenez sans limites avec 
+                    <span class="text-gradient">EduTech</span>
+                </h1>
+                <p class="text-xl text-gray-300 mb-8">
+                    Accédez à des centaines de cours en ligne dispensés par les meilleurs experts dans leur domaine.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-lg glow-on-hover btn-press transition-all duration-300 transform hover:scale-105">
+                        Commencer maintenant
+                    </button>
+                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-4 rounded-lg btn-press transition-all duration-300 transform hover:scale-105">
+                        Explorer les cours
+                    </button>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center animate__animated animate__fadeInRight">
+                <img src="https://illustrations.popsy.co/amber/online-learning.svg" alt="Online Learning" class="w-full max-w-md floating">
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-900 to-transparent"></div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-16">
+        <!-- Features Section -->
+        <section class="mb-20">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Pourquoi choisir EduTech ?</h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Une plateforme d'apprentissage conçue pour vous offrir la meilleure expérience éducative en ligne.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-800 bg-opacity-50 rounded-xl p-8 card-hover border border-gray-700 transform transition-all duration-500 hover:border-blue-500">
+                    <div class="bg-blue-500 rounded-full w-16 h-16 flex items-center justify-center mb-6 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-center">Contenu de qualité</h3>
+                    <p class="text-gray-400 text-center">
+                        Des cours créés et vérifiés par des experts pour garantir un apprentissage de haut niveau.
+                    </p>
+                </div>
+                
+                <div class="bg-gray-800 bg-opacity-50 rounded-xl p-8 card-hover border border-gray-700 transform transition-all duration-500 hover:border-green-500">
+                    <div class="bg-green-500 rounded-full w-16 h-16 flex items-center justify-center mb-6 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-center">Apprentissage flexible</h3>
+                    <p class="text-gray-400 text-center">
+                        Apprenez à votre rythme, quand vous voulez et où vous voulez, sur tous vos appareils.
+                    </p>
+                </div>
+                
+                <div class="bg-gray-800 bg-opacity-50 rounded-xl p-8 card-hover border border-gray-700 transform transition-all duration-500 hover:border-purple-500">
+                    <div class="bg-purple-500 rounded-full w-16 h-16 flex items-center justify-center mb-6 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-center">Certifications reconnues</h3>
+                    <p class="text-gray-400 text-center">
+                        Obtenez des certificats qui valoriseront votre CV et vos compétences professionnelles.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu Grid Section -->
+        <section class="mb-20">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Explorez nos ressources</h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Accédez à tous nos outils et ressources pédagogiques en un clic.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Menu Item 1 -->
+                <div class="menu-item bg-gray-800 rounded-xl p-6 shadow-lg cursor-pointer" onclick="animateAndNavigate(this, '#')">
+                    <div class="flex items-start">
+                        <div class="bg-blue-500 bg-opacity-20 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Tous les cours</h3>
+                            <p class="text-gray-400">Explorez notre catalogue complet de cours dans tous les domaines.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Menu Item 2 -->
+                <div class="menu-item bg-gray-800 rounded-xl p-6 shadow-lg cursor-pointer" onclick="animateAndNavigate(this, '#')">
+                    <div class="flex items-start">
+                        <div class="bg-green-500 bg-opacity-20 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Bibliothèque</h3>
+                            <p class="text-gray-400">Accédez à des ressources supplémentaires et documents pédagogiques.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Menu Item 3 -->
+                <div class="menu-item bg-gray-800 rounded-xl p-6 shadow-lg cursor-pointer" onclick="animateAndNavigate(this, '#')">
+                    <div class="flex items-start">
+                        <div class="bg-purple-500 bg-opacity-20 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Mes certifications</h3>
+                            <p class="text-gray-400">Consultez et téléchargez vos certifications obtenues.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Menu Item 4 -->
+                <div class="menu-item bg-gray-800 rounded-xl p-6 shadow-lg cursor-pointer" onclick="animateAndNavigate(this, '#')">
+                    <div class="flex items-start">
+                        <div class="bg-yellow-500 bg-opacity-20 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Progression</h3>
+                            <p class="text-gray-400">Suivez votre avancement dans les différents cours.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Menu Item 5 -->
+                <div class="menu-item bg-gray-800 rounded-xl p-6 shadow-lg cursor-pointer" onclick="animateAndNavigate(this, '#')">
+                    <div class="flex items-start">
+                        <div class="bg-red-500 bg-opacity-20 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Forum</h3>
+                            <p class="text-gray-400">Échangez avec la communauté et posez vos questions.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Menu Item 6 -->
+                <div class="menu-item bg-gray-800 rounded-xl p-6 shadow-lg cursor-pointer" onclick="animateAndNavigate(this, '#')">
+                    <div class="flex items-start">
+                        <div class="bg-pink-500 bg-opacity-20 p-3 rounded-lg mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">Mon compte</h3>
+                            <p class="text-gray-400">Gérez vos informations personnelles et paramètres.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Courses -->
+        <section class="mb-20">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Cours populaires</h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Découvrez les cours les plus appréciés par notre communauté.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Course 1 -->
+                <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Programmation" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            Nouveau
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-blue-900 bg-opacity-50 text-blue-400 text-xs px-2 py-1 rounded">Développement</span>
+                            <div class="flex items-center text-yellow-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                                <span class="ml-1 text-gray-300">4.9</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Maîtrise de JavaScript Moderne</h3>
+                        <p class="text-gray-400 mb-4">Apprenez ES6+, React, Node.js et bien plus encore dans ce cours complet.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="ml-2 text-sm text-gray-400">32 heures</span>
+                            </div>
+                            <button class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg glow-on-hover btn-press transition-all duration-300">
+                                Voir le cours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 2 -->
+                <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c811329bcea1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Data Science" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-green-900 bg-opacity-50 text-green-400 text-xs px-2 py-1 rounded">Data Science</span>
+                            <div class="flex items-center text-yellow-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                                <span class="ml-1 text-gray-300">4.7</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Data Science pour débutants</h3>
+                        <p class="text-gray-400 mb-4">Introduction au machine learning et à l'analyse de données avec Python.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="ml-2 text-sm text-gray-400">24 heures</span>
+                            </div>
+                            <button class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg glow-on-hover btn-press transition-all duration-300">
+                                Voir le cours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 3 -->
+                <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg card-hover">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Design" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 right-4 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            Populaire
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-purple-900 bg-opacity-50 text-purple-400 text-xs px-2 py-1 rounded">Design</span>
+                            <div class="flex items-center text-yellow-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                                <span class="ml-1 text-gray-300">4.8</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">UI/UX Design Moderne</h3>
+                        <p class="text-gray-400 mb-4">Créez des interfaces utilisateur intuitives et esthétiques avec Figma.</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="ml-2 text-sm text-gray-400">18 heures</span>
+                            </div>
+                            <button class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg glow-on-hover btn-press transition-all duration-300">
+                                Voir le cours
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg glow-on-hover btn-press transition-all duration-300 transform hover:scale-105">
+                    Voir tous les cours
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- CTA Section -->
+    <section class="bg-gray-800 py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Prêt à commencer votre voyage d'apprentissage ?</h2>
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+                Rejoignez des milliers d'apprenants et développez vos compétences dès aujourd'hui.
+            </p>
+            <button class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-lg glow-on-hover btn-press transition-all duration-300 transform hover:scale-105 pulse">
+                S'inscrire gratuitement
+            </button>
         </div>
     </section>
 
-    <section class="section" id="courses">
-        <div class="section-title">
-            <h2>Nos Cours Populaires</h2>
-        </div>
-        
-        <div class="slider-container">
-            <div class="slider" id="slider">
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80" alt="Cours de programmation">
-                    <div class="slide-content">
-                        <h3>Développement Web Fullstack</h3>
-                        <p>Maîtrisez HTML, CSS, JavaScript et les frameworks modernes pour créer des applications web complètes.</p>
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path d="M12 14l6.16-3.422a
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-gradient">EduTech</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Plateforme d'apprentissage en ligne pour les talents de demain
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-pink-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/>
+                            </svg>
+                        </a>
                     </div>
                 </div>
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Cours de data science">
-                    <div class="slide-content">
-                        <h3>Science des Données Avancée</h3>
-                        <p>Apprenez le machine learning, l'analyse de données et la visualisation avec Python et R.</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Cours de marketing digital">
-                    <div class="slide-content">
-                        <h3>Marketing Digital Complet</h3>
-                        <p>Découvrez les stratégies de SEO, réseaux sociaux, email marketing et publicité en ligne.</p>
-                    </div>
-                </div>
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1415&q=80" alt="Cours de business intelligence">
-                    <div class="slide-content">
-                        <h3>Business Intelligence</h3>
-                        <p>Transformez les données en insights stratégiques pour prendre des décisions éclairées.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="slider-nav">
-                <button id="prevSlide"><i class="fas fa-chevron-left"></i></button>
-                <button id="nextSlide"><i class="fas fa-chevron-right"></i></button>
-            </div>
-            
-            <div class="slider-dots" id="sliderDots"></div>
-        </div>
-    </section>
 
-    <section class="section stats">
-        <div class="stats-container">
-            <div class="stat-item">
-                <div class="stat-number" id="studentsCount">0</div>
-                <div class="stat-label">Étudiants</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="coursesCount">0</div>
-                <div class="stat-label">Cours</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="instructorsCount">0</div>
-                <div class="stat-label">Instructeurs</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="countriesCount">0</div>
-                <div class="stat-label">Pays</div>
-            </div>
-        </div>
-    </section>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Navigation</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Accueil</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Cours</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Formateurs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">À propos</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
 
-    <section class="section" id="features">
-        <div class="section-title">
-            <h2>Pourquoi Nous Choisir</h2>
-        </div>
-        
-        <div class="features">
-            <div class="feature-card animate-on-scroll">
-                <div class="feature-icon">
-                    <i class="fas fa-laptop-code"></i>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Légal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Conditions d'utilisation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Politique de confidentialité</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">Mentions légales</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">FAQ</a></li>
+                    </ul>
                 </div>
-                <h3>Contenu de Qualité</h3>
-                <p>Nos cours sont créés par des experts et régulièrement mis à jour pour suivre les dernières tendances technologiques.</p>
-            </div>
-            
-            <div class="feature-card animate-on-scroll">
-                <div class="feature-icon">
-                    <i class="fas fa-user-tie"></i>
-                </div>
-                <h3>Mentors Experts</h3>
-                <p>Accédez à des mentors expérimentés qui vous guideront tout au long de votre parcours d'apprentissage.</p>
-            </div>
-            
-            <div class="feature-card animate-on-scroll">
-                <div class="feature-icon">
-                    <i class="fas fa-certificate"></i>
-                </div>
-                <h3>Certifications</h3>
-                <p>Obtenez des certifications reconnues par l'industrie qui valoriseront votre CV et votre profil professionnel.</p>
-            </div>
-            
-            <div class="feature-card animate-on-scroll">
-                <div class="feature-icon">
-                    <i class="fas fa-comments"></i>
-                </div>
-                <h3>Communauté Active</h3>
-                <p>Rejoignez une communauté dynamique d'apprenants pour échanger, collaborer et progresser ensemble.</p>
-            </div>
-            
-            <div class="feature-card animate-on-scroll">
-                <div class="feature-icon">
-                    <i class="fas fa-mobile-alt"></i>
-                </div>
-                <h3>Apprentissage Mobile</h3>
-                <p>Accédez à nos cours depuis n'importe quel appareil, à tout moment et où que vous soyez.</p>
-            </div>
-            
-            <div class="feature-card animate-on-scroll">
-                <div class="feature-icon">
-                    <i class="fas fa-briefcase"></i>
-                </div>
-                <h3>Carrière</h3>
-                <p>Bénéficiez de notre réseau d'entreprises partenaires pour trouver des opportunités professionnelles.</p>
-            </div>
-        </div>
-    </section>
 
-    <section class="section testimonials" id="testimonials">
-        <div class="section-title">
-            <h2>Témoignages</h2>
-        </div>
-        
-        <div class="testimonial-slider">
-            <div class="testimonial active">
-                <div class="testimonial-content">
-                    Grâce à EduDark, j'ai pu acquérir les compétences nécessaires pour décrocher mon premier emploi en tant que développeur web. Les cours sont bien structurés et les projets pratiques m'ont vraiment aidé à comprendre les concepts.
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Marie Dupont" class="author-avatar">
-                    <div class="author-info">
-                        <h4>Marie Dupont</h4>
-                        <p>Développeuse Frontend</p>
-                    </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2">
+                        <li class="text-gray-400">contact@edutech.com</li>
+                        <li class="text-gray-400">+33 1 23 45 67 89</li>
+                        <li class="text-gray-400">12 Rue de l'Innovation<br>75000 Paris</li>
+                    </ul>
                 </div>
             </div>
-            
-            <div class="testimonial">
-                <div class="testimonial-content">
-                    En tant que professionnel en reconversion, j'ai apprécié la flexibilité des cours et la qualité des ressources. Les mentors sont toujours disponibles pour répondre aux questions et fournir des retours constructifs.
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Jean Martin" class="author-avatar">
-                    <div class="author-info">
-                        <h4>Jean Martin</h4>
-                        <p>Data Scientist</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial">
-                <div class="testimonial-content">
-                    La plateforme offre une excellente variété de cours avec des défis stimulants. J'ai particulièrement aimé les projets en groupe qui m'ont permis de collaborer avec d'autres apprenants du monde entier.
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sophie Leroy" class="author-avatar">
-                    <div class="author-info">
-                        <h4>Sophie Leroy</h4>
-                        <p>Marketing Digital</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-nav">
-                <button class="active" data-index="0"></button>
-                <button data-index="1"></button>
-                <button data-index="2"></button>
-            </div>
-        </div>
-    </section>
 
-    <footer id="contact">
-        <div class="footer-content">
-            <div class="footer-column">
-                <h3>EduDark</h3>
-                <p>La plateforme d'e-learning moderne pour acquérir des compétences professionnelles et transformer votre carrière.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                </div>
+            <div class="border-t border-gray-800 pt-8 mt-8 text-center">
+                <p class="text-gray-400 text-sm">
+                    © 2024 EduTech. Tous droits réservés. 
+                    <span class="block sm:inline mt-2 sm:mt-0">Développé avec ❤️ par l'équipe EduTech</span>
+                </p>
             </div>
-            
-            <div class="footer-column">
-                <h3>Navigation</h3>
-                <ul>
-                    <li><a href="#">Accueil</a></li>
-                    <li><a href="#courses">Cours</a></li>
-                    <li><a href="#features">Fonctionnalités</a></li>
-                    <li><a href="#testimonials">Témoignages</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-column">
-                <h3>Catégories</h3>
-                <ul>
-                    <li><a href="#">Développement Web</a></li>
-                    <li><a href="#">Science des Données</a></li>
-                    <li><a href="#">Marketing Digital</a></li>
-                    <li><a href="#">Design UX/UI</a></li>
-                    <li><a href="#">Business Intelligence</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-column">
-                <h3>Contact</h3>
-                <ul>
-                    <li><i class="fas fa-map-marker-alt"></i> 123 Rue de l'Éducation, Paris</li>
-                    <li><i class="fas fa-phone"></i> +33 1 23 45 67 89</li>
-                    <li><i class="fas fa-envelope"></i> contact@edudark.com</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="copyright">
-            <p>&copy; 2023 EduDark. Tous droits réservés.</p>
         </div>
     </footer>
 
     <script>
-        // Dark Mode Toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const body = document.body;
-        
-        // Check for saved user preference or use system preference
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-        const currentTheme = localStorage.getItem('theme');
-        
-        if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
-            body.classList.add('dark-mode');
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        function animateAndNavigate(element, url) {
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = '';
+                window.location.href = url;
+            }, 200);
         }
-        
-        darkModeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            
-            if (body.classList.contains('dark-mode')) {
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                localStorage.setItem('theme', 'light');
-            }
-        });
-
-        // Image Slider
-        const slider = document.getElementById('slider');
-        const slides = document.querySelectorAll('.slide');
-        const prevBtn = document.getElementById('prevSlide');
-        const nextBtn = document.getElementById('nextSlide');
-        const dotsContainer = document.getElementById('sliderDots');
-        
-        let currentSlide = 0;
-        const slideCount = slides.length;
-        
-        // Create dots
-        slides.forEach((_, index) => {
-            const dot = document.createElement('button');
-            dot.addEventListener('click', () => goToSlide(index));
-            dotsContainer.appendChild(dot);
-        });
-        
-        const dots = document.querySelectorAll('.slider-dots button');
-        dots[0].classList.add('active');
-        
-        function updateSlider() {
-            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-            
-            // Update dots
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentSlide);
-            });
-        }
-        
-        function goToSlide(slideIndex) {
-            currentSlide = (slideIndex + slideCount) % slideCount;
-            updateSlider();
-        }
-        
-        function nextSlide() {
-            goToSlide(currentSlide + 1);
-        }
-        
-        function prevSlide() {
-            goToSlide(currentSlide - 1);
-        }
-        
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-        
-        // Auto slide
-        let slideInterval = setInterval(nextSlide, 5000);
-        
-        // Pause on hover
-        slider.addEventListener('mouseenter', () => {
-            clearInterval(slideInterval);
-        });
-        
-        slider.addEventListener('mouseleave', () => {
-            slideInterval = setInterval(nextSlide, 5000);
-        });
-
-        // Testimonial Slider
-        const testimonials = document.querySelectorAll('.testimonial');
-        const testimonialDots = document.querySelectorAll('.testimonial-nav button');
-        let currentTestimonial = 0;
-        
-        function showTestimonial(index) {
-            testimonials.forEach(testimonial => testimonial.classList.remove('active'));
-            testimonialDots.forEach(dot => dot.classList.remove('active'));
-            
-            testimonials[index].classList.add('active');
-            testimonialDots[index].classList.add('active');
-            currentTestimonial = index;
-        }
-        
-        testimonialDots.forEach((dot, index) => {
-            dot.addEventListener('click', () => showTestimonial(index));
-        });
-        
-        // Auto rotate testimonials
-        setInterval(() => {
-            showTestimonial((currentTestimonial + 1) % testimonials.length);
-        }, 7000);
-
-        // Animate on scroll
-        function animateOnScroll() {
-            const elements = document.querySelectorAll('.animate-on-scroll');
-            
-            elements.forEach(element => {
-                const elementPosition = element.getBoundingClientRect().top;
-                const screenPosition = window.innerHeight / 1.3;
-                
-                if (elementPosition < screenPosition) {
-                    element.classList.add('animated');
-                }
-            });
-        }
-        
-        window.addEventListener('scroll', animateOnScroll);
-        animateOnScroll(); // Run once on load
-
-        // Counter animation
-        function animateCounter(element, target, duration = 2000) {
-            const start = 0;
-            const increment = target / (duration / 16);
-            let current = start;
-            
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    clearInterval(timer);
-                    current = target;
-                }
-                element.textContent = Math.floor(current).toLocaleString();
-            }, 16);
-        }
-        
-        // Start counters when stats section is visible
-        const statsSection = document.querySelector('.stats');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounter(document.getElementById('studentsCount'), 12500);
-                    animateCounter(document.getElementById('coursesCount'), 320);
-                    animateCounter(document.getElementById('instructorsCount'), 150);
-                    animateCounter(document.getElementById('countriesCount'), 85);
-                    observer.unobserve(entry.target);
-                }
-            });
+    </script>
+</body>
+</html>

@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        /* Animations et styles personnalisés */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -55,7 +54,6 @@
                     </div>
                     
                     <div id="forumsContainer" class="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-custom">
-                        <!-- Les forums seront chargés ici -->
                         <div class="text-center py-8 text-gray-500">
                             <p>Chargement des forums...</p>
                         </div>
@@ -98,52 +96,45 @@
         // Configuration de base
         const apiBaseUrl = '/api/forums';
         let currentForumId = null;
-        let currentUserId = 1; // À remplacer par l'ID de l'utilisateur connecté
+        let currentUserId = 1;
 
-        // Chargement initial
-        document.addEventListener('DOMContentLoaded', function() {
-            loadForums();
-        });
-
-        // Charger la liste des forums
-        function loadForums() {
+        // Déclaration des fonctions globales
+        window.loadForums = async function() {
             const container = document.getElementById('forumsContainer');
             container.innerHTML = '<div class="text-center py-8 text-gray-500"><p>Chargement en cours...</p></div>';
 
-            axios.get(apiBaseUrl)
-                .then(response => {
-                    if (response.data.data.length === 0) {
-                        container.innerHTML = '<div class="text-center py-8 text-gray-500"><p>Aucun forum disponible</p></div>';
-                        return;
-                    }
+            try {
+                const response = await axios.get(apiBaseUrl);
+                
+                if (!response.data?.data?.length) {
+                    container.innerHTML = '<div class="text-center py-8 text-gray-500"><p>Aucun forum disponible</p></div>';
+                    return;
+                }
 
-                    container.innerHTML = '';
-                    response.data.data.forEach(forum => {
-                        const forumElement = document.createElement('div');
-                        forumElement.className = 'forum-card p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition';
-                        forumElement.innerHTML = `
-                            <h3 class="font-bold text-indigo-200">${forum.titre}</h3>
-                            <p class="text-sm text-gray-400 mt-1 truncate">${forum.description}</p>
-                            <div class="flex justify-between items-center mt-3 text-xs text-gray-500">
-                                <span>Par utilisateur #${forum.utilisateur_id}</span>
-                                <span>${new Date(forum.created_at).toLocaleDateString()}</span>
-                            </div>
-                        `;
-                        forumElement.addEventListener('click', () => showForumMessages(forum));
-                        container.appendChild(forumElement);
-                    });
-                })
-                .catch(error => {
-                    console.error('Erreur de chargement des forums:', error);
-                    container.innerHTML = '<div class="text-center py-8 text-red-400"><p>Erreur de chargement</p></div>';
+                container.innerHTML = '';
+                response.data.data.forEach(forum => {
+                    const forumElement = document.createElement('div');
+                    forumElement.className = 'forum-card p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition fade-in';
+                    forumElement.innerHTML = `
+                        <h3 class="font-bold text-indigo-200">${forum.titre}</h3>
+                        <p class="text-sm text-gray-400 mt-1 truncate">${forum.description}</p>
+                        <div class="flex justify-between items-center mt-3 text-xs text-gray-500">
+                            <span>Par utilisateur #${forum.utilisateur_id}</span>
+                            <span>${new Date(forum.created_at).toLocaleDateString()}</span>
+                        </div>
+                    `;
+                    forumElement.addEventListener('click', () => showForumMessages(forum));
+                    container.appendChild(forumElement);
                 });
-        }
+            } catch (error) {
+                console.error('Erreur de chargement des forums:', error);
+                container.innerHTML = '<div class="text-center py-8 text-red-400"><p>Erreur de chargement</p></div>';
+            }
+        };
 
-        // Afficher les messages d'un forum spécifique
-        function showForumMessages(forum) {
+        async function showForumMessages(forum) {
             currentForumId = forum.id;
             
-            // Afficher les détails du forum
             const detailsContainer = document.getElementById('forumDetails');
             detailsContainer.classList.remove('hidden');
             detailsContainer.innerHTML = `
@@ -174,14 +165,10 @@
                 </div>
             `;
 
-            // Activer le formulaire de message
             document.getElementById('messageForm').classList.remove('hidden');
-            
-            // Charger les messages du forum
-            loadMessages();
+            await loadMessages();
         }
 
-        // Masquer les détails du forum
         function hideForumDetails() {
             document.getElementById('forumDetails').classList.add('hidden');
             document.getElementById('messageForm').classList.add('hidden');
@@ -190,107 +177,62 @@
             currentForumId = null;
         }
 
-        // Charger les messages du forum sélectionné
-        function loadMessages() {
-            if (!currentForumId) return;
+        async function loadForums() {
+    const container = document.getElementById('forumsContainer');
+    try {
+        const response = await axios.get(apiBaseUrl);
+        
+        container.innerHTML = '';
+        response.data.data.forEach(forum => {
+            const forumElement = document.createElement('div');
+            forumElement.className = 'forum-card p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition fade-in';
+            forumElement.innerHTML = `
+                <h3 class="font-bold text-indigo-200">${forum.titre}</h3>
+                <p class="text-sm text-gray-400 mt-1">${forum.description}</p>
+                <div class="mt-3 text-xs text-gray-500">
+                    <p>Créé par ${forum.utilisateur.nom}</p>
+                    <p>${forum.messages.length} messages</p>
+                    <p>Dernier message : ${new Date(forum.updated_at).toLocaleDateString()}</p>
+                </div>
+            `;
+            forumElement.addEventListener('click', () => showForumDetails(forum));
+            container.appendChild(forumElement);
+        });
+    } catch (error) {
+        console.error('Erreur de chargement:', error);
+        container.innerHTML = '<div class="text-center py-8 text-red-400"><p>Erreur de chargement des forums</p></div>';
+    }
+}
 
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = '<div class="text-center py-8 text-gray-500"><p>Chargement des messages...</p></div>';
+async function showForumDetails(forum) {
+    try {
+        const response = await axios.get(`/api/forums/${forum.id}/messages`);
+        const messages = response.data.data;
 
-            axios.get(`${apiBaseUrl}/${currentForumId}/messages`)
-                .then(response => {
-                    const messages = response.data.data;
-                    document.getElementById('messageCount').textContent = `${messages.length} message(s)`;
+        const detailsHtml = `
+            <div class="mb-4">
+                <h3 class="text-xl font-bold text-indigo-300">${forum.titre}</h3>
+                <p class="text-gray-300 mt-2">${forum.description}</p>
+            </div>
+            <div class="space-y-4">
+                ${messages.map(message => `
+                    <div class="message-card p-4 rounded-lg">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-medium text-indigo-200">${message.utilisateur.nom}</span>
+                            <span class="text-xs text-gray-500">${new Date(message.created_at).toLocaleString()}</span>
+                        </div>
+                        <p class="text-gray-300">${message.contenu}</p>
+                    </div>
+                `).join('')}
+            </div>
+        `;
 
-                    if (messages.length === 0) {
-                        container.innerHTML = '<div class="text-center py-8 text-gray-500"><p>Aucun message dans ce forum</p></div>';
-                        return;
-                    }
-
-                    container.innerHTML = '';
-                    messages.forEach(message => {
-                        const messageElement = document.createElement('div');
-                        messageElement.className = 'message-card p-4 rounded-lg';
-                        messageElement.innerHTML = `
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="font-medium text-indigo-200">Utilisateur #${message.utilisateur_id}</span>
-                                <span class="text-xs text-gray-500">${new Date(message.created_at).toLocaleString()}</span>
-                            </div>
-                            <p class="text-gray-300">${message.contenu}</p>
-                            ${message.utilisateur_id === currentUserId ? `
-                            <div class="flex justify-end space-x-2 mt-3">
-                                <button onclick="editMessage(${message.id})" class="text-xs text-yellow-400 hover:text-yellow-300">Modifier</button>
-                                <button onclick="deleteMessage(${message.id})" class="text-xs text-red-400 hover:text-red-300">Supprimer</button>
-                            </div>
-                            ` : ''}
-                        `;
-                        container.appendChild(messageElement);
-                    });
-                    
-                    // Faire défiler vers le bas pour voir les nouveaux messages
-                    container.scrollTop = container.scrollHeight;
-                })
-                .catch(error => {
-                    console.error('Erreur de chargement des messages:', error);
-                    container.innerHTML = '<div class="text-center py-8 text-red-400"><p>Erreur de chargement</p></div>';
-                });
-        }
-
-        // Poster un nouveau message
-        function postMessage() {
-            if (!currentForumId) return;
-
-            const content = document.getElementById('newMessageContent').value;
-            if (!content) {
-                alert('Veuillez écrire un message');
-                return;
-            }
-
-            axios.post('/api/messages', {
-                contenu: content,
-                forum_id: currentForumId,
-                utilisateur_id: currentUserId
-            })
-            .then(() => {
-                document.getElementById('newMessageContent').value = '';
-                loadMessages();
-            })
-            .catch(error => {
-                console.error('Erreur lors de l\'envoi du message:', error);
-                alert('Erreur lors de l\'envoi du message');
-            });
-        }
-
-        // Modifier un message
-        function editMessage(messageId) {
-            const newContent = prompt('Modifier votre message:');
-            if (newContent) {
-                axios.put(`/api/messages/${messageId}`, {
-                    contenu: newContent
-                })
-                .then(() => {
-                    loadMessages();
-                })
-                .catch(error => {
-                    console.error('Erreur lors de la modification:', error);
-                    alert('Erreur lors de la modification');
-                });
-            }
-        }
-
-        // Supprimer un message
-        function deleteMessage(messageId) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
-                axios.delete(`/api/messages/${messageId}`)
-                    .then(() => {
-                        loadMessages();
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la suppression:', error);
-                        alert('Erreur lors de la suppression');
-                    });
-            }
-        }
+        document.getElementById('forumDetails').innerHTML = detailsHtml;
+        document.getElementById('forumDetails').classList.remove('hidden');
+    } catch (error) {
+        console.error('Erreur de chargement des messages:', error);
+    }
+}
     </script>
 </body>
 </html>

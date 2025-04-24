@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Forum; 
-use App\Models\Cours; 
+use App\Models\Cours;
+use App\Models\Message;
+use App\Models\User; 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
@@ -16,26 +18,25 @@ class ForumController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function index()
-    {
-        try {
-            $forums = Forum::with(['cours', 'utilisateur', 'messages'])
-                        ->latest()
-                        ->paginate(10);
+{
+    try {
+        $forums = Forum::with(['cours', 'utilisateur', 'messages'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-            return response()->json([
-                'status' => 'success',
-                'data' => $forums
-            ]);
+        return response()->json([
+            'status' => 'success',
+            'data' => $forums
+        ]);
 
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de la récupération des forums: ' . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Erreur serveur'
-            ], 500);
-        }
+    } catch (\Exception $e) {
+        Log::error('Erreur de récupération des forums : ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Impossible de charger les forums'
+        ], 500);
     }
-
+}
     /**
      * Crée un nouveau forum
      *
@@ -48,7 +49,7 @@ class ForumController extends Controller
             'titre' => 'required|string|max:255',
             'description' => 'required|string',
             'cours_id' => 'required|exists:cours,id',
-            'utilisateur_id' => 'required|exists:utilisateurs,id'
+            'utilisateur_id' => 'required|exists:users,id'
         ]);
 
         if ($validator->fails()) {
@@ -229,4 +230,108 @@ class ForumController extends Controller
             ], 500);
         }
     }
+
+
+    public function showMessages($forumId)
+{
+    try {
+        $messages = Message::with('utilisateur')
+            ->where('forum_id', $forumId)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $messages
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Erreur récupération messages: ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Erreur serveur'
+        ], 500);
+    }
+    }
+
+    /**
+     * Récupère les messages d'un forum spécifique
+     *
+     * @param  string  $forumId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function messagesByForum($forumId)
+    {
+        try {
+            $messages = Message::with(['forum', 'utilisateur'])
+                        ->where('forum_id', $forumId)
+                        ->latest()
+                        ->paginate(10);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $messages
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur récupération messages par forum: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur serveur'
+            ], 500);
+        }
+    }
+    /**
+     * Récupère les messages d'un utilisateur spécifique
+     *
+     * @param  string  $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function messagesByUser($userId)
+    {
+        try {
+            $messages = Message::with(['forum', 'utilisateur'])
+                        ->where('utilisateur_id', $userId)
+                        ->latest()
+                        ->paginate(10);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $messages
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur récupération messages par utilisateur: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur serveur'
+            ], 500);
+        }
+    }
+    /**
+     * Récupère les forums d'un utilisateur spécifique
+     *
+     * @param  string  $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function forumsByUser($userId)   
+    {
+        try {
+            $forums = Forum::with(['cours', 'messages'])
+                        ->where('utilisateur_id', $userId)
+                        ->latest()
+                        ->paginate(10);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $forums
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur récupération forums par utilisateur: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur serveur'
+            ], 500);
+        }
+    }          
 }

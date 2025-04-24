@@ -3,14 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Ajouter cette ligne
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Forum extends Model
 {
+
+
+    
+
      /**
      * Les attributs qui sont mass assignable.
      *
      * @var array
      */
+
+     use HasFactory; // Nécessaire pour utiliser les factories
     protected $fillable = [
         'cours_id',       // ID du cours auquel le forum est associé
         'titre',          // Titre du forum
@@ -25,7 +37,7 @@ class Forum extends Model
      */
     public function cours()
     {
-        return $this->belongsTo(Cours::class, 'cours_id');
+        return $this->belongsTo(Course::class, 'cours_id');
     }
 
     /**
@@ -35,9 +47,10 @@ class Forum extends Model
      */
     public function utilisateur()
     {
-        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
+        return $this->belongsTo(User::class, 'utilisateur_id'); // Ajout explicite de la clé étrangère
     }
 
+    
     /**
      * Relation avec les messages du forum.
      *
@@ -47,4 +60,14 @@ class Forum extends Model
     {
         return $this->hasMany(Message::class, 'forum_id');
     }
+
+
+    
+
+    
+
+
+
+
+    
 }

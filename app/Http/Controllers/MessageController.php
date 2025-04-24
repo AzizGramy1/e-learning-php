@@ -42,7 +42,7 @@ class MessageController extends Controller
         $validator = Validator::make($request->all(), [
             'contenu' => 'required|string|max:1000',
             'forum_id' => 'required|exists:forums,id',
-            'utilisateur_id' => 'required|exists:utilisateurs,id'
+            'utilisateur_id' => 'required|exists:users,id' 
         ]);
 
         if ($validator->fails()) {
@@ -162,27 +162,7 @@ class MessageController extends Controller
     }
 
 
-    public function messagesByForum($forumId)
-{
-    try {
-        $messages = Message::with(['forum', 'utilisateur'])
-                    ->where('forum_id', $forumId)
-                    ->latest()
-                    ->paginate(10);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $messages
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Erreur récupération messages par forum: ' . $e->getMessage());
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Erreur serveur'
-        ], 500);
-    }
-}
 
 /**
  * Récupère les messages d'un utilisateur spécifique

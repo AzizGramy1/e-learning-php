@@ -34,6 +34,6 @@ class Message extends Model
      */
     public function utilisateur()
     {
-        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
+        return $this->belongsTo(User::class, 'utilisateur_id');
     }
 }

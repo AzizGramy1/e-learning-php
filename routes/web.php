@@ -7,6 +7,8 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\QuizController; 
 use App\Http\Controllers\RapportController;
+use App\Http\Controllers\ForumController;
+
 
 
 Route::get('/', function () {
@@ -27,7 +29,7 @@ Route::get('/userView', function () {
 });
 
 
-Route::get('/menuControllers', function () {
+Route::get('/menuView', function () {
     return view('menuControllers');
 });
 
@@ -54,7 +56,7 @@ Route::prefix('api')->group(function() {
         Route::put('/cours/{id}', [CoursController::class, 'update']);    // PUT /api/cours/1
         Route::delete('/cours/{id}', [CoursController::class, 'destroy']);// DELETE /api/cours/1
 
-
+ 
 
         Route::get('/users', [UserController::class, 'index']);
         Route::post('/users', [UserController::class, 'store']);
@@ -114,6 +116,20 @@ Route::prefix('api')->group(function() {
         Route::put('/paiements/{id}', [PaiementController::class, 'update']);
         Route::delete('/paiements/{id}', [PaiementController::class, 'destroy']);
         Route::get('/users/{userId}/paiements', [PaiementController::class, 'apiIndex']); // Liste des paiements par utilisateur
+
+
+
+
+        // Routes pour les forums
+        Route::resource('forums', ForumController::class)->except(['edit', 'update']);
+        Route::get('/forums/create', [ForumController::class, 'create'])->name('forums.create');
+        Route::get('/forums/{forum}/messages', [ForumController::class, 'showMessages'])->name('forums.messages');
+                
+        
+
+
+
+
 
 
     

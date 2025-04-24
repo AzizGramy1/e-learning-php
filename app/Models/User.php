@@ -73,6 +73,12 @@ class User extends Authenticatable
     }
 
 
+    public function forums()
+    {
+        return $this->hasMany(Forum::class, 'utilisateur_id'); // Relation inverse ajoutée
+    }
+
+
 
     
 }
