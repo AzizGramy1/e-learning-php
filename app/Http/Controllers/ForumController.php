@@ -17,26 +17,30 @@ class ForumController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
-{
-    try {
-        $forums = Forum::with(['cours', 'utilisateur', 'messages'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $forums
-        ]);
+     public function indexView()
+     {
+         try {
+             $forums = Forum::with(['cours', 'utilisateur'])
+                 ->withCount('messages')
+                 ->orderByDesc('created_at')
+                 ->paginate(10);
+     
+             return view('forumView', compact('forums'));
+     
+         } catch (\Exception $e) {
+             Log::error('Erreur chargement forums : ' . $e->getMessage());
+             return back()->with('error', 'Erreur de chargement des forums');
+         }
+     }
 
-    } catch (\Exception $e) {
-        Log::error('Erreur de récupération des forums : ' . $e->getMessage());
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Impossible de charger les forums'
-        ], 500);
-    }
-}
+     
+
+
+
+
+
+
     /**
      * Crée un nouveau forum
      *
@@ -237,13 +241,15 @@ class ForumController extends Controller
     try {
         $messages = Message::with('utilisateur')
             ->where('forum_id', $forumId)
-            ->latest()
-            ->get();
+            ->orderBy('created_at', 'asc') // Ordre chronologique
+            ->paginate(10); // Ajout de la pagination
 
         return response()->json([
             'status' => 'success',
-            'data' => $messages
+            'data' => $messages,
+            'forum' => Forum::find($forumId)
         ]);
+
     } catch (\Exception $e) {
         Log::error('Erreur récupération messages: ' . $e->getMessage());
         return response()->json([

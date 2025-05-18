@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,6 +13,9 @@ class Message extends Model
      *
      * @var array
      */
+
+     use HasFactory; // ← Activer les factories
+    // Utilisé pour générer des données de test
     protected $fillable = [
         'forum_id',       // ID du forum auquel le message appartient
         'utilisateur_id', // ID de l'utilisateur qui a posté le message

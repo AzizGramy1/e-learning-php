@@ -25,22 +25,25 @@ class QuizSeeder extends Seeder
             return;
         }
 
-        // Insérer des quizzes fictifs
-        DB::table('quizzes')->insert([
-            [
-                'cours_id' => $cours->id,
-                'titre' => 'Introduction à Laravel',
-                'description' => 'Testez vos connaissances de base sur Laravel.',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'cours_id' => $cours->id,
-                'titre' => 'PHP avancé',
-                'description' => 'Un quiz pour évaluer votre compréhension des concepts avancés de PHP.',
-                'created_at' => Carbon::now()->subDays(2),
-                'updated_at' => Carbon::now()->subDays(2),
-            ],
+         Quiz::create([
+            'cours_id' => 1,
+            'titre' => 'Quiz Laravel',
+            'description' => 'Un quiz de base sur Laravel.',
+            'duree' => 30,
+            'passage_max' => 3,
+            'note_minimale' => 60,
+            'est_actif' => true,
+            'date_ouverture' => now(),
+            'date_fermeture' => now()->addDays(7),
+            'aleatoire_questions' => true,
+            'correction_auto' => true,
+            'certificat_id' => null,
         ]);
+
+
+        
     }
+
+
+
 }

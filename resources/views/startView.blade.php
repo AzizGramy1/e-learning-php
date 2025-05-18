@@ -125,7 +125,7 @@
                 </div>
             </div>
             <div class="md:w-1/2 flex justify-center animate__animated animate__fadeInRight">
-                <img src="https://illustrations.popsy.co/amber/online-learning.svg" alt="Online Learning" class="w-full max-w-md floating">
+                <img src="https://st2.depositphotos.com/1720162/10275/v/950/depositphotos_102750706-stock-illustration-flat-line-design-website-banner.jpg" alt="Online Learning" class="w-full max-w-md floating">
             </div>
         </div>
         <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-900 to-transparent"></div>

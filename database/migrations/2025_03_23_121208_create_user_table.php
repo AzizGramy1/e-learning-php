@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
-            $table->string('email')->unique();
-            $table->string('mot_de_passe');
-            $table->string('role')->default('étudiant');
+            $table->string('nom', 100);             // Nom avec longueur explicite
+            $table->string('email', 150)->unique(); // Email avec longueur augmentée
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('mot_de_passe');         // Compatible avec Laravel Auth
+            $table->string('role', 20)->default('étudiant');
+            $table->rememberToken();
             $table->timestamps();
+            
+            $table->index('role'); // Index pour les requêtes filtrées par rôle
         });
     }
 

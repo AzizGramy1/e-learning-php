@@ -16,21 +16,16 @@ class MessageController extends Controller
     public function index()
     {
         try {
-            $messages = Message::with(['forum', 'utilisateur'])
-                        ->latest()
-                        ->paginate(10);
-
-            return response()->json([
-                'status' => 'success',
-                'data' => $messages
-            ]);
-
+            $forums = Forum::with(['cours', 'utilisateur'])
+                ->withCount('messages')
+                ->orderByDesc('created_at')
+                ->paginate(10);
+    
+            return view('forumView', compact('forums'));
+    
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la récupération des messages: ' . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Erreur serveur'
-            ], 500);
+            Log::error('Erreur chargement vue forums: ' . $e->getMessage());
+            abort(500, 'Erreur d\'affichage des forums');
         }
     }
 
@@ -40,41 +35,37 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'contenu' => 'required|string|max:1000',
-            'forum_id' => 'required|exists:forums,id',
-            'utilisateur_id' => 'required|exists:users,id' 
+            'contenu' => 'required|string|max:2000',
+            'utilisateur_id' => 'required|exists:users,id'
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validator->errors()
             ], 422);
         }
-
+    
         try {
-            // Vérifier que le forum existe
-            $forum = Forum::findOrFail($request->forum_id);
-
             $message = Message::create([
-                'forum_id' => $request->forum_id,
-                'utilisateur_id' => $request->utilisateur_id,
-                'contenu' => $request->contenu
+                'contenu' => $request->contenu,
+                'forum_id' => $forumId,
+                'utilisateur_id' => $request->utilisateur_id
             ]);
-
+    
             return response()->json([
                 'status' => 'success',
-                'data' => $message->load(['forum', 'utilisateur']),
-                'message' => 'Message créé avec succès'
+                'data' => $message->load('utilisateur'),
+                'message' => 'Message posté avec succès'
             ], 201);
-
+    
         } catch (\Exception $e) {
             Log::error('Erreur création message: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Erreur lors de la création du message'
             ], 500);
-        }
+        }   
     }
 
     /**

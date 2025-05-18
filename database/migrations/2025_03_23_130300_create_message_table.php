@@ -12,24 +12,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('messages', function (Blueprint $table) {
-            $table->id(); // Colonne ID auto-incrémentée
-            $table->unsignedBigInteger('forum_id'); // Clé étrangère vers la table `forums`
-            $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
-            $table->text('contenu'); // Contenu du message
-            $table->timestamps(); // Colonnes `created_at` et `updated_at`
+            $table->engine = 'InnoDB';
+            $table->id();
+            
+            // Clé étrangère vers forums
+            $table->unsignedBigInteger('forum_id');
+            $table->foreign('forum_id')
+                  ->references('id')
+                  ->on('forums') // Bien référencer `forums`
+                  ->onDelete('cascade');
 
-            // Ajout des clés étrangères
-            $table->foreign('forum_id')->references('id')->on('forums')->onDelete('cascade');
-            $table->foreign('utilisateur_id')->references('id')->on('users')->onDelete('cascade');
+            // Clé étrangère vers users
+            $table->unsignedBigInteger('utilisateur_id');
+            $table->foreign('utilisateur_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
+
+            $table->text('contenu');
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('messages');
     }

@@ -70,15 +70,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Cube 1 -->
             <div class="cube-container">
-                <button class="cube w-full h-48">
+                <button onclick="window.location.href='coursView'" class="cube w-full h-48">
                     <div class="cube-face cube-front flex flex-col items-center justify-center p-6 border-2 border-blue-400/20">
                         <div class="icon-wrapper mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-blue-200 mb-2">Accueil</h3>
-                        <p class="text-gray-400 text-sm text-center">Portail principal</p>
+                        <h3 class="text-xl font-semibold text-blue-200 mb-2">Cours</h3>
+                        <p class="text-gray-400 text-sm text-center">Gestion des cours</p>
                     </div>
                     <div class="cube-face cube-side"></div>
                 </button>
@@ -86,15 +86,15 @@
 
             <!-- Cube 2 -->
             <div class="cube-container">
-                <button class="cube w-full h-48">
+                <button onclick="window.location.href='userView'" class="cube w-full h-48">
                     <div class="cube-face cube-front flex flex-col items-center justify-center p-6 border-2 border-purple-400/20">
                         <div class="icon-wrapper mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-purple-200 mb-2">Profil</h3>
-                        <p class="text-gray-400 text-sm text-center">Gestion du compte</p>
+                        <h3 class="text-xl font-semibold text-purple-200 mb-2">Profils</h3>
+                        <p class="text-gray-400 text-sm text-center">Gestion des utilisateurs</p>
                     </div>
                     <div class="cube-face cube-side"></div>
                 </button>
@@ -102,15 +102,15 @@
 
             <!-- Cube 3 -->
             <div class="cube-container">
-                <button class="cube w-full h-48">
+                <button onclick="window.location.href='certificatView'" class="cube w-full h-48">
                     <div class="cube-face cube-front flex flex-col items-center justify-center p-6 border-2 border-green-400/20">
                         <div class="icon-wrapper mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-green-200 mb-2">Documents</h3>
-                        <p class="text-gray-400 text-sm text-center">Archives numériques</p>
+                        <h3 class="text-xl font-semibold text-green-200 mb-2">Certificats</h3>
+                        <p class="text-gray-400 text-sm text-center">Gestions des certificats</p>
                     </div>
                     <div class="cube-face cube-side"></div>
                 </button>
@@ -118,7 +118,7 @@
 
             <!-- Cube 4 -->
             <div class="cube-container">
-                <button class="cube w-full h-48">
+                <button onclick="window.location.href='forumView'" class="cube w-full h-48">
                     <div class="cube-face cube-front flex flex-col items-center justify-center p-6 border-2 border-red-400/20">
                         <div class="icon-wrapper mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,8 +126,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-red-200 mb-2">Paramètres</h3>
-                        <p class="text-gray-400 text-sm text-center">Personnalisation</p>
+                        <h3 class="text-xl font-semibold text-red-200 mb-2">Discussions</h3>
+                        <p class="text-gray-400 text-sm text-center">Parametrage des discussions</p>
                     </div>
                     <div class="cube-face cube-side"></div>
                 </button>
@@ -142,8 +142,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold text-yellow-200 mb-2">Historique</h3>
-                        <p class="text-gray-400 text-sm text-center">Activités récentes</p>
+                        <h3 class="text-xl font-semibold text-yellow-200 mb-2">Paiements</h3>
+                        <p class="text-gray-400 text-sm text-center">Historique des transactions</p>
                     </div>
                     <div class="cube-face cube-side"></div>
                 </button>

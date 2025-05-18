@@ -7,32 +7,38 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
    /**
-     * Run the migrations.
-     *
-     * @return void
+     * Run the database seeds.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('forums', function (Blueprint $table) {
-            $table->id(); // Colonne ID auto-incrémentée
-            $table->unsignedBigInteger('cours_id'); // Clé étrangère vers la table `cours`
-            $table->string('titre'); // Titre du forum
-            $table->text('description')->nullable(); // Description du forum (peut être nulle)
-            $table->unsignedBigInteger('utilisateur_id'); // Clé étrangère vers la table `utilisateurs`
-            $table->timestamps(); // Colonnes `created_at` et `updated_at`
+        Schema::create('forums', function (Blueprint $table) { // Nom de la table au pluriel
+            $table->engine = 'InnoDB'; // Nécessaire pour les clés étrangères
+            $table->id();
+            $table->string('titre');
+            $table->text('description');
+            
+            // Clé étrangère vers la table `courses`
+            $table->unsignedBigInteger('cours_id');
+            $table->foreign('cours_id')
+                  ->references('id')
+                  ->on('courses')
+                  ->onDelete('cascade'); // Suppression en cascade
 
-            // Ajout des clés étrangères
-            $table->foreign('cours_id')->references('id')->on('courses')->onDelete('cascade');
-            $table->foreign('utilisateur_id')->references('id')->on('users')->onDelete('cascade');
+            // Clé étrangère vers la table `users`
+            $table->unsignedBigInteger('utilisateur_id');
+            $table->foreign('utilisateur_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
     /**
-     * Reverse the migrations.
-     *
-     * @return void
+     * Annule les migrations.
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('forums');
     }

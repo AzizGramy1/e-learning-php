@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CertificatController;
+use App\Http\Controllers\UserController; // ← Ajoutez cette ligne
+
 use App\Http\Controllers\CoursController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PaiementController;
@@ -21,6 +23,11 @@ Route::get('/', function () {
 
 Route::get('/coursView', function () {
     return view('coursView');
+});
+
+
+Route::get('/indexQuizz', function () {
+    return view('indexQuizz');
 });
 
 
@@ -45,6 +52,16 @@ Route::get('/forumView', function () {
 Route::get('/backendWelcomePage', function () {
     return view('startView');
 });
+
+Route::get('/loginView', function () {
+    return view('loginView');
+});
+
+Route::get('/addQuizz', function () {
+    return view('quizzForm');
+});
+
+
 
 
 Route::prefix('api')->group(function() {
@@ -119,11 +136,31 @@ Route::prefix('api')->group(function() {
 
 
 
+        Route::get('/forumView', [ForumController::class, 'index'])->name('forum.view');
 
-        // Routes pour les forums
-        Route::resource('forums', ForumController::class)->except(['edit', 'update']);
-        Route::get('/forums/create', [ForumController::class, 'create'])->name('forums.create');
-        Route::get('/forums/{forum}/messages', [ForumController::class, 'showMessages'])->name('forums.messages');
+        Route::get('/forums/{forum}/messages', [ForumController::class, 'showMessages']);
+        Route::post('/forums/{forum}/messages', [ForumController::class, 'store']);
+        Route::get('/forums', [ForumController::class, 'indexView'])->name('forums.index');
+
+
+
+        // GET /quizzes : Liste paginée des quizzes
+        Route::get('/quizzes', [QuizController::class, 'index'])->name('quizzes.index');
+
+        // POST /quizzes : Création d’un nouveau quiz
+        Route::post('/quizzes', [QuizController::class, 'store'])->name('quizzes.store');
+
+        // GET /quizzes/{id} : Détails d’un quiz
+        Route::get('/quizzes/{id}', [QuizController::class, 'show'])->name('quizzes.show');
+
+        // PUT /quizzes/{id} : Mise à jour d’un quiz
+        Route::put('/quizzes/{id}', [QuizController::class, 'update'])->name('quizzes.update');
+
+        /// DELETE /quizzes/{id} : Suppression d’un quiz
+        Route::delete('/quizzes/{id}', [QuizController::class, 'destroy'])->name('quizzes.destroy');
+
+
+
                 
         
 

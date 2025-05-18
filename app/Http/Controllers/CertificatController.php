@@ -5,6 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Certificat;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use App\Models\Cours;
+use App\Models\Message;
+use App\Models\Forum;
+use App\Models\Quiz;
+use App\Models\Question;
+use App\Models\Reponse;
 
 class CertificatController extends Controller
 {

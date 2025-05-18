@@ -6,7 +6,6 @@
     <title>Forums et Discussions</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -24,22 +23,15 @@
         .scrollbar-custom::-webkit-scrollbar { width: 6px; }
         .scrollbar-custom::-webkit-scrollbar-track { background: #1f2937; }
         .scrollbar-custom::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 3px; }
-        .grid-forums {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <!-- En-tête -->
         <header class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-indigo-400 mb-2">Forums de Discussion</h1>
+            <h1 class="text-3xl font-bold text-indigo-400 mb-2">    Discussion</h1>
             <p class="text-gray-400">Partagez vos questions et connaissances</p>
         </header>
 
-        <!-- Conteneur principal -->
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Section des forums -->
             <div class="lg:w-1/3">
@@ -64,7 +56,7 @@
             <!-- Section des messages -->
             <div class="lg:w-2/3">
                 <div id="forumDetails" class="bg-gray-800 rounded-xl shadow-xl p-6 mb-6 hidden">
-                    <!-- Détails du forum sélectionné -->
+                    <!-- Détails du forum -->
                 </div>
 
                 <div id="messagesSection" class="bg-gray-800 rounded-xl shadow-xl p-6">
@@ -77,7 +69,7 @@
                         <p class="text-gray-400 text-center py-8">Sélectionnez un forum pour voir les messages</p>
                     </div>
 
-                    <!-- Formulaire d'envoi de message -->
+                    <!-- Formulaire d'envoi -->
                     <div id="messageForm" class="mt-6 pt-4 border-t border-gray-700 hidden">
                         <h3 class="text-lg font-semibold text-green-300 mb-3">Nouveau Message</h3>
                         <textarea id="newMessageContent" rows="3" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white mb-3" placeholder="Écrivez votre message ici..."></textarea>
@@ -93,82 +85,87 @@
     </div>
 
     <script>
-        // Configuration de base
         const apiBaseUrl = '/api/forums';
         let currentForumId = null;
-        let currentUserId = 1;
 
-        // Déclaration des fonctions globales
+        // Chargement initial
+        window.addEventListener('DOMContentLoaded', () => loadForums());
+
+        // Fonction principale de chargement des forums
         window.loadForums = async function() {
-            const container = document.getElementById('forumsContainer');
-            container.innerHTML = '<div class="text-center py-8 text-gray-500"><p>Chargement en cours...</p></div>';
+    const container = document.getElementById('forumsContainer');
+    container.innerHTML = '<div>Chargement...</div>';
 
-            try {
-                const response = await axios.get(apiBaseUrl);
-                
-                if (!response.data?.data?.length) {
-                    container.innerHTML = '<div class="text-center py-8 text-gray-500"><p>Aucun forum disponible</p></div>';
-                    return;
-                }
-
-                container.innerHTML = '';
-                response.data.data.forEach(forum => {
-                    const forumElement = document.createElement('div');
-                    forumElement.className = 'forum-card p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition fade-in';
-                    forumElement.innerHTML = `
-                        <h3 class="font-bold text-indigo-200">${forum.titre}</h3>
-                        <p class="text-sm text-gray-400 mt-1 truncate">${forum.description}</p>
-                        <div class="flex justify-between items-center mt-3 text-xs text-gray-500">
-                            <span>Par utilisateur #${forum.utilisateur_id}</span>
-                            <span>${new Date(forum.created_at).toLocaleDateString()}</span>
-                        </div>
-                    `;
-                    forumElement.addEventListener('click', () => showForumMessages(forum));
-                    container.appendChild(forumElement);
-                });
-            } catch (error) {
-                console.error('Erreur de chargement des forums:', error);
-                container.innerHTML = '<div class="text-center py-8 text-red-400"><p>Erreur de chargement</p></div>';
-            }
-        };
-
-        async function showForumMessages(forum) {
-            currentForumId = forum.id;
-            
-            const detailsContainer = document.getElementById('forumDetails');
-            detailsContainer.classList.remove('hidden');
-            detailsContainer.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-300">${forum.titre}</h3>
-                        <p class="text-gray-300">${forum.description}</p>
-                    </div>
-                    <button onclick="hideForumDetails()" class="text-gray-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-sm">
-                    <div class="bg-gray-700 p-2 rounded">
-                        <p class="text-gray-400">Cours</p>
-                        <p class="text-indigo-300">#${forum.cours_id}</p>
-                    </div>
-                    <div class="bg-gray-700 p-2 rounded">
-                        <p class="text-gray-400">Créé par</p>
-                        <p class="text-indigo-300">#${forum.utilisateur_id}</p>
-                    </div>
-                    <div class="bg-gray-700 p-2 rounded">
-                        <p class="text-gray-400">Date</p>
-                        <p class="text-indigo-300">${new Date(forum.created_at).toLocaleDateString()}</p>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('messageForm').classList.remove('hidden');
-            await loadMessages();
+    try {
+        const response = await axios.get(apiBaseUrl);
+        
+        // Vérification de la structure
+        const forums = response.data?.data; // Accès à .data.data
+        if (!Array.isArray(forums)) {
+            throw new Error("Structure de données inattendue");
         }
 
+        container.innerHTML = '';
+        forums.forEach(forum => {
+            const forumElement = document.createElement('div');
+            forumElement.innerHTML = `
+                <h3>${forum.title}</h3>
+                <p>${forum.description}</p>
+            `;
+            container.appendChild(forumElement);
+        });
+
+    } catch (error) {
+        console.error('Erreur:', error);
+        container.innerHTML = '<div>Échec du chargement</div>';
+    }
+};
+
+        // Affichage des messages d'un forum
+        async function showForumMessages(forum) {
+            currentForumId = forum.id;
+            const detailsContainer = document.getElementById('forumDetails');
+            
+            try {
+                const response = await axios.get(`${apiBaseUrl}/${forum.id}/messages`);
+                const messages = response.data;
+
+                // Mise à jour de l'interface
+                detailsContainer.classList.remove('hidden');
+                detailsContainer.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-indigo-300">${forum.title}</h3>
+                            <p class="text-gray-300">${forum.description}</p>
+                        </div>
+                        <button onclick="hideForumDetails()" class="text-gray-400 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        ${messages.map(message => `
+                            <div class="message-card p-4 rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="font-medium text-indigo-200">${message.user?.name || 'Anonyme'}</span>
+                                    <span class="text-xs text-gray-500">${new Date(message.created_at).toLocaleString()}</span>
+                                </div>
+                                <p class="text-gray-300">${message.content}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                document.getElementById('messageForm').classList.remove('hidden');
+                document.getElementById('messageCount').textContent = `${messages.length} message(s)`;
+                document.getElementById('messagesContainer').scrollTop = 0;
+            } catch (error) {
+                console.error('Erreur de chargement des messages:', error);
+            }
+        }
+
+        // Masquer les détails
         function hideForumDetails() {
             document.getElementById('forumDetails').classList.add('hidden');
             document.getElementById('messageForm').classList.add('hidden');
@@ -177,62 +174,22 @@
             currentForumId = null;
         }
 
-        async function loadForums() {
-    const container = document.getElementById('forumsContainer');
-    try {
-        const response = await axios.get(apiBaseUrl);
-        
-        container.innerHTML = '';
-        response.data.data.forEach(forum => {
-            const forumElement = document.createElement('div');
-            forumElement.className = 'forum-card p-4 rounded-lg cursor-pointer hover:bg-gray-700 transition fade-in';
-            forumElement.innerHTML = `
-                <h3 class="font-bold text-indigo-200">${forum.titre}</h3>
-                <p class="text-sm text-gray-400 mt-1">${forum.description}</p>
-                <div class="mt-3 text-xs text-gray-500">
-                    <p>Créé par ${forum.utilisateur.nom}</p>
-                    <p>${forum.messages.length} messages</p>
-                    <p>Dernier message : ${new Date(forum.updated_at).toLocaleDateString()}</p>
-                </div>
-            `;
-            forumElement.addEventListener('click', () => showForumDetails(forum));
-            container.appendChild(forumElement);
-        });
-    } catch (error) {
-        console.error('Erreur de chargement:', error);
-        container.innerHTML = '<div class="text-center py-8 text-red-400"><p>Erreur de chargement des forums</p></div>';
-    }
-}
+        // Envoi de message
+        async function postMessage() {
+            const content = document.getElementById('newMessageContent').value;
+            if (!content || !currentForumId) return;
 
-async function showForumDetails(forum) {
-    try {
-        const response = await axios.get(`/api/forums/${forum.id}/messages`);
-        const messages = response.data.data;
-
-        const detailsHtml = `
-            <div class="mb-4">
-                <h3 class="text-xl font-bold text-indigo-300">${forum.titre}</h3>
-                <p class="text-gray-300 mt-2">${forum.description}</p>
-            </div>
-            <div class="space-y-4">
-                ${messages.map(message => `
-                    <div class="message-card p-4 rounded-lg">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="font-medium text-indigo-200">${message.utilisateur.nom}</span>
-                            <span class="text-xs text-gray-500">${new Date(message.created_at).toLocaleString()}</span>
-                        </div>
-                        <p class="text-gray-300">${message.contenu}</p>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-
-        document.getElementById('forumDetails').innerHTML = detailsHtml;
-        document.getElementById('forumDetails').classList.remove('hidden');
-    } catch (error) {
-        console.error('Erreur de chargement des messages:', error);
-    }
-}
+            try {
+                await axios.post(`${apiBaseUrl}/${currentForumId}/messages`, {
+                    content,
+                    user_id: 1 // À remplacer par l'ID réel de l'utilisateur
+                });
+                document.getElementById('newMessageContent').value = '';
+                await showForumMessages({ id: currentForumId });
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi:', error);
+            }
+        }
     </script>
 </body>
 </html>

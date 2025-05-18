@@ -51,31 +51,31 @@ class User extends Authenticatable
     // Un utilisateur peut avoir plusieurs certificats
     public function certificats()
     {
-        return $this->hasMany(Certificat::class, 'utilisateur_id');
+        return $this->hasMany(Certificat::class, 'user_id');
     }
 
     // Un utilisateur peut avoir plusieurs messages dans le forum
     public function messages()
     {
-        return $this->hasMany(Message::class, 'utilisateur_id');
+        return $this->hasMany(Message::class, 'user_id');
     }
 
     // Un utilisateur peut effectuer plusieurs paiements
     public function paiements()
     {
-        return $this->hasMany(Paiement::class, 'utilisateur_id');
+        return $this->hasMany(Paiement::class, 'user_id');
     }
 
     // Un utilisateur peut générer plusieurs rapports
     public function rapports()
     {
-        return $this->hasMany(Rapport::class, 'utilisateur_id');
+        return $this->hasMany(Rapport::class, 'user_id');
     }
 
 
     public function forums()
     {
-        return $this->hasMany(Forum::class, 'utilisateur_id'); // Relation inverse ajoutée
+        return $this->hasMany(Forum::class, 'user_id'); // Relation inverse ajoutée
     }
 
 
