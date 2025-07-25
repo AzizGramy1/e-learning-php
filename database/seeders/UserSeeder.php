@@ -39,8 +39,8 @@ class UserSeeder extends Seeder
         $roles = ['étudiant', 'formateur', 'administrateur'];
         for ($i = 1; $i <= 10; $i++) {
             User::create([
-                'nom' => 'User ' . $i,
-                'email' => 'user' . $i . '@example.com',
+                'nom' => 'Asma ' . $i,
+                'email' => 'HobDyelli' . $i . '@example.com',
                 'mot_de_passe' => Hash::make('password'), // Mot de passe : "password"
                 'role' => $roles[array_rand($roles)], // Rôle aléatoire
             ]);

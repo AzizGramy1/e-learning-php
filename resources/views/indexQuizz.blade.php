@@ -321,7 +321,7 @@
             // Charger les cours
             async function loadCourses() {
                 try {
-                    const response = await fetch('/api/courses');
+                    const response = await fetch('/api/cours');
                     if (!response.ok) throw new Error('Erreur de chargement des cours');
                     courses = await response.json();
                     populateCourseSelect();
@@ -334,7 +334,7 @@
             // Charger les certificats
             async function loadCertificates() {
                 try {
-                    const response = await fetch('/api/certificates');
+                    const response = await fetch('/api/certificats');
                     if (!response.ok) throw new Error('Erreur de chargement des certificats');
                     certificates = await response.json();
                     populateCertificateSelect();
@@ -347,7 +347,7 @@
             // Charger les quiz
             async function loadQuizzes(page = 1, search = '') {
                 try {
-                    let url = `/api/quizzes?page=${page}`;
+                    let url = `/api/quizz?page=${page}`;
                     if (search) url += `&search=${encodeURIComponent(search)}`;
                     
                     const response = await fetch(url);

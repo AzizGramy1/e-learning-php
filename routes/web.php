@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CertificatController;
-use App\Http\Controllers\UserController; // ← Ajoutez cette ligne
+use App\Http\Controllers\UserController; 
 
 use App\Http\Controllers\CoursController;
 use App\Http\Controllers\MessageController;
@@ -10,7 +10,7 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\QuizController; 
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\ForumController;
-
+use App\Http\Controllers\AuthController;
 
 
 Route::get('/', function () {
@@ -62,6 +62,88 @@ Route::get('/addQuizz', function () {
 });
 
 
+Route::get('/loginBackend', function () {
+    return view('loginViewTestForLaravel');
+});
+
+Route::get('/welcomeDadh', function () {
+    return view('dashboard_welcome');
+});
+
+Route::get('/messageForum', function () {
+    return view('message_forum');
+});
+
+Route::get('/videoConference', function () {
+    return view('videoConference_1');
+});
+
+Route::get('/certificat_par_user', function () {
+    return view('certificats_par_user');
+});
+
+
+Route::get('/profil_details', function () {
+    return view('profil_details');
+});
+
+Route::get('/quiz_details', function () {
+    return view('quiz_details');
+});
+
+
+Route::get('/quiz_menu', function () {
+    return view('quiz_menu');
+});
+
+
+
+Route::get('/mySpace', function () {
+    return view('myspace');
+});
+
+
+Route::get('/paiementQuiz', function () {
+    return view('paiementQuizz');
+});
+
+Route::get('/assistantAI', function () {
+    return view('assistanAI');
+});
+
+
+Route::get('/calendrier_user', function () {
+    return view('calendrier_user');
+});
+
+
+Route::get('/inscrption_page', function () {
+    return view('inscriptionBackend');
+});
+
+
+Route::get('/lesSallesDeReunion', function () {
+    return view('lesSalleDeReunions');
+});
+
+Route::middleware('guest')->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+});
+
+
+//////////////////////////////// authentification routes /////////////////////////
+
+// Routes publiques (sans authentification)
+
+Route::middleware('User')->group(function () {
+    Route::post('/loginUser', [AuthController::class, 'login'])->name('login');
+});
+
+// Routes protégées (nécessitent une authentification)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logoutUser', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/me', [AuthController::class, 'me'])->name('user.profile');
+});
 
 
 Route::prefix('api')->group(function() {
@@ -80,6 +162,9 @@ Route::prefix('api')->group(function() {
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::put('/users/{id}', [UserController::class, 'update']);
         Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+        Route::post('/loginTest', [AuthController::class, 'login']);
+
         
         // Routes de profil
         Route::get('/profile', [UserController::class, 'profile']);
@@ -108,7 +193,6 @@ Route::prefix('api')->group(function() {
         // Routes pour les autres contrôleurs (message, paiement, quiz, rapport)
         Route::apiResource('messages', MessageController::class);
         Route::apiResource('paiements', PaiementController::class);
-        Route::apiResource('quizzes', QuizController::class);
         Route::apiResource('rapports', RapportController::class);
 
 
@@ -145,7 +229,7 @@ Route::prefix('api')->group(function() {
 
 
         // GET /quizzes : Liste paginée des quizzes
-        Route::get('/quizzes', [QuizController::class, 'index'])->name('quizzes.index');
+        Route::get('/quizz', [QuizController::class, 'index'])->name('quizzes.index');
 
         // POST /quizzes : Création d’un nouveau quiz
         Route::post('/quizzes', [QuizController::class, 'store'])->name('quizzes.store');

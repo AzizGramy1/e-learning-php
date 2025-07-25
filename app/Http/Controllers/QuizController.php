@@ -25,24 +25,24 @@ class QuizController extends Controller
 
      // GET /quizzes
     public function index()
-    {
-        try {
-            $quizzes = Quiz::with(['cours', 'certificat'])
-                ->latest()
-                ->paginate(10);
+{
+    try {
+        $quizzes = Quiz::with(['cours:id,titre', 'certificat:id,nom'])
+            ->latest()
+            ->paginate(10);
 
-            return response()->json([
-                'success' => true,
-                'data' => $quizzes
-            ]);
-        } catch (\Exception $e) {
-            Log::error("Erreur lors de la récupération des quiz : " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur serveur'
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'data' => $quizzes
+        ]);
+    } catch (\Exception $e) {
+        Log::error("Erreur API lors de la récupération des quiz : " . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur serveur'
+        ], 500);
     }
+}
 
     // POST /quizzes
     public function store(Request $request)

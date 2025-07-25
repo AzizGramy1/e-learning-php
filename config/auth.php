@@ -35,10 +35,11 @@ return [
     |
     */
 
+    // APRÈS
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'authentifications',  // Nouveau provider
         ],
     ],
 
@@ -60,10 +61,11 @@ return [
     */
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
-        ],
+    'authentifications' => [  // Nom du provider changé
+        'driver' => 'eloquent',
+        'model' => App\Models\Authentification::class,  // Modèle personnalisé
+    ],
+
 
         // 'users' => [
         //     'driver' => 'database',
@@ -92,7 +94,7 @@ return [
 
     'passwords' => [
         'users' => [
-            'provider' => 'users',
+            'provider' => 'authentifications',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,

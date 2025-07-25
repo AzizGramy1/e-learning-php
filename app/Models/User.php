@@ -20,7 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'nom',
         'email',
-        'mot_de_passe',
+        'password',     // Note: 'mot_de_passe' is the French equivalent of 'password'
         'role',         // Rôle de l'utilisateur (étudiant, formateur, administrateur)
     ];
 
@@ -30,7 +30,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'mot_de_passe',
+        'password',
         'remember_token',
     ];
 
@@ -43,7 +43,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'mot_de_passe' => 'hashed',
+            'password' => 'hashed',
         ];
     }
 

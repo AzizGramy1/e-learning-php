@@ -324,6 +324,28 @@ class UserController extends Controller
     }
 
 
+
+     public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt(['email' => $credentials['email'], 'mot_de_passe' => $credentials['password']])) {
+            $user = Auth::user();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Connexion réussie',
+                'user' => $user
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Identifiants invalides'
+        ], 401);
+    }
+
+
     // Méthodes pour les relations
 public function getUserCertificats($userId)
 {
