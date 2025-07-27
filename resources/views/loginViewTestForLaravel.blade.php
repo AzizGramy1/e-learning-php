@@ -99,8 +99,9 @@
             </div>
             
             <!-- Login Form -->
-            <form id="loginForm" class="px-8 pt-8 pb-6">
-                <!-- Email Input -->
+<form id="loginForm" method="POST" action="{{ route('login') }}" class="px-8 pt-8 pb-6">
+    @csrf
+                    <!-- Email Input -->
                 <div class="mb-6 animate__animated animate__fadeInUp animate__delay-1s">
                     <label for="email" class="block text-gray-300 text-sm font-medium mb-2">Adresse email</label>
                     <div class="relative">
@@ -151,7 +152,7 @@
                 
                 <!-- Remember Me & Submit -->
                 <div class="mb-6 flex items-center animate__animated animate__fadeInUp animate__delay-3s">
-                    <input id="remember" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
+                    <input id="remember" name="remember" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
                     <label for="remember" class="ml-2 text-sm text-gray-300">Se souvenir de moi</label>
                 </div>
                 
@@ -218,85 +219,134 @@
         <div class="absolute top-1/3 right-1/4 w-12 h-12 rounded-full bg-green-500 opacity-10 animate-float animation-delay-3000 hidden md:block"></div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Toggle password visibility
-            const togglePassword = document.getElementById('togglePassword');
-            const password = document.getElementById('password');
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    if (togglePassword) {
+        const password = document.getElementById('password');
+        togglePassword.addEventListener('click', function() {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
             
-            togglePassword.addEventListener('click', function() {
-                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-                password.setAttribute('type', type);
-                
-                // Change the icon
-                this.innerHTML = type === 'password' ? 
-                    '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>' :
-                    '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>';
-            });
+            // Change the icon
+            this.innerHTML = type === 'password' ? 
+                '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>' :
+                '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>';
+        });
+    }
+    
+    // Form submission with AJAX
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            // Form submission with animation
-            const loginForm = document.getElementById('loginForm');
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const btnSpinner = document.getElementById('btnSpinner');
+            // Clear previous errors
+            document.querySelectorAll('.text-red-400, .bg-red-500').forEach(el => el.remove());
+            document.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
             
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Show loading state
+            // Show loading state
+            if (btnText && btnSpinner) {
                 btnText.classList.add('hidden');
                 btnSpinner.classList.remove('hidden');
+            }
+            if (submitBtn) {
+                submitBtn.disabled = true;
                 submitBtn.classList.add('cursor-not-allowed', 'opacity-75');
+            }
+            
+            try {
+                const formData = new FormData(loginForm);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
                 
-                // Simulate API call
-                setTimeout(function() {
-                    // For demo purposes - always show success
-                    // In real app, you would handle errors too
-                    
+                if (!csrfToken) {
+                    throw new Error('CSRF token missing');
+                }
+                
+                const response = await fetch(loginForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw data;
+                }
+                
+                if (data.success) {
                     // Success animation
-                    submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
-                    submitBtn.classList.add('bg-green-500', 'hover:bg-green-400');
-                    btnSpinner.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Connecté avec succès !
-                    `;
+                    if (submitBtn) {
+                        submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+                        submitBtn.classList.add('bg-green-500', 'hover:bg-green-400');
+                    }
+                    if (btnSpinner) {
+                        btnSpinner.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Connecté avec succès !
+                        `;
+                    }
                     
                     // Redirect after delay
-                    setTimeout(function() {
-                        window.location.href = 'dashboard.html'; // Change to your dashboard page
-                    }, 1500);
-                    
-                }, 2000);
-            });
-            
-            // Add animation to form inputs on focus
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.classList.add('ring-2', 'ring-blue-500', 'rounded-lg');
-                });
+                    setTimeout(() => {
+                        window.location.href = data.redirect || "{{ route('welcomeDadh') }}";
+                    }, 1000);
+                } else {
+                    throw new Error(data.message || 'Une erreur est survenue');
+                }
+            } catch (error) {
+                // Reset button state
+                if (btnText && btnSpinner) {
+                    btnText.classList.remove('hidden');
+                    btnSpinner.classList.add('hidden');
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('cursor-not-allowed', 'opacity-75');
+                }
                 
-                input.addEventListener('blur', function() {
-                    this.parentElement.classList.remove('ring-2', 'ring-blue-500', 'rounded-lg');
-                });
-            });
-            
-            // Error state example (for demo)
-            // Uncomment to test error animation
-            /*
-            setTimeout(function() {
+                // Show errors
+                const errorMessage = error.message || 
+                                   (error.errors ? Object.values(error.errors)[0][0] : 'Identifiants incorrects');
+                
+                const errorElement = document.createElement('div');
+                errorElement.className = 'mb-4 p-3 bg-red-500 bg-opacity-20 text-red-300 rounded-lg text-sm';
+                errorElement.textContent = errorMessage;
+                loginForm.prepend(errorElement);
+                
+                // Shake form for attention
                 loginForm.classList.add('shake');
-                document.getElementById('email').classList.add('border-red-500');
-                document.getElementById('password').classList.add('border-red-500');
-                
-                setTimeout(function() {
-                    loginForm.classList.remove('shake');
-                }, 500);
-            }, 3000);
-            */
+                setTimeout(() => loginForm.classList.remove('shake'), 500);
+            }
         });
-    </script>
+    }
+    
+    // Add animation to form inputs on focus
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement?.classList?.add('ring-2', 'ring-blue-500', 'rounded-lg');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement?.classList?.remove('ring-2', 'ring-blue-500', 'rounded-lg');
+        });
+    });
+});
+</script>
+
+
 </body>
 </html>

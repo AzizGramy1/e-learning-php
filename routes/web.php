@@ -62,13 +62,80 @@ Route::get('/addQuizz', function () {
 });
 
 
-Route::get('/loginBackend', function () {
-    return view('loginViewTestForLaravel');
+
+
+//////////////////////////////////////////////// Routes de test pour l'authentification web//////////////////////////////
+
+
+Route::get('/login-backend', function () {
+    return view('loginViewTestForLaravel'); // remplace par ta vraie vue
+})->name('loginBackend');
+
+// Ajoutez cette route pour le traitement du formulaire
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+// Routes de test pour l'authentification web
+Route::middleware('guest')->group(function () {
+    // Vue de test pour l'inscription
+    Route::get('/test/register', function () {
+        return view('test_register');
+    })->name('test.register.view');
+    
+    // Vue de test pour la connexion
+    Route::get('/test/login', function () {
+        return view('test_login');
+    })->name('test.login.view');
 });
+
+Route::middleware(['auth', 'active'])->group(function () {
+    // Page de test protégée - Accès utilisateur normal
+    Route::get('/test/protected', function () {
+        return response()->json([
+            'message' => 'Vous êtes authentifié (web)',
+            'user' => auth()->user()
+        ]);
+    })->name('test.protected');
+    
+    // Page de test protégée - Accès admin seulement
+    Route::get('/test/admin-only', function () {
+        return response()->json([
+            'message' => 'Vous êtes admin (web)',
+            'user' => auth()->user()
+        ]);
+    })->middleware('role:admin')->name('test.admin.only');
+    
+    // Page pour voir les informations de session
+    Route::get('/test/session-info', function (Request $request) {
+        return response()->json([
+            'session' => $request->session()->all(),
+            'user' => $request->user(),
+            'authenticated' => Auth::check()
+        ]);
+    });
+});
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Route::get('/welcomeDadh', function () {
     return view('dashboard_welcome');
-});
+})->name('welcomeDadh'); // Ajoutez cette partie
 
 Route::get('/messageForum', function () {
     return view('message_forum');
@@ -247,6 +314,8 @@ Route::prefix('api')->group(function() {
 
                 
         
+
+
 
 
 
