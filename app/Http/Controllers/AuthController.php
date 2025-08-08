@@ -5,176 +5,84 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator; 
 use App\Models\User; 
+use App\Enums\UserRole; 
+
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 
 class AuthController extends Controller
 {
-    /**
-     * Connexion utilisateur (pour API et Web)
-     */
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string',
-            'remember' => 'nullable|boolean'
-        ]);
+    
+    
+public function login(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|email',
+        'password' => 'required|string|min:6',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $credentials = $request->only('email', 'password');
-        $remember = $request->boolean('remember', false);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Identifiants incorrects'
-            ], 401);
-        }
-
-        if (!$user->active) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Votre compte est désactivé'
-            ], 403);
-        }
-
-        // Pour les requêtes API
-        if ($request->wantsJson() || $request->is('api/*')) {
-            $token = $user->createToken('auth_token')->plainTextToken;
-            
-            return response()->json([
-                'success' => true,
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'user' => $user
-            ]);
-        }
-
-        // Pour les requêtes web
-        Auth::login($user, $remember);
-        $request->session()->regenerate();
-        
-        return response()->json([
-            'success' => true,
-            'redirect' => route('profile'), // Ajout de la redirection
-            'user' => $user,
-            'message' => 'Connexion réussie'
-        ]);
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 422);
     }
 
-    /**
-     * Déconnexion utilisateur
-     */
-    public function logout(Request $request)
-    {
-        // Pour les requêtes API
-        if ($request->wantsJson() || $request->is('api/*')) {
-            $request->user()->currentAccessToken()->delete();
-            return response()->json([
-                'success' => true,
-                'message' => 'Déconnexion réussie'
-            ]);
+    $credentials = $request->only('email', 'password');
+
+    try {
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->json(['error' => 'Identifiants invalides'], 401);
         }
 
-        // Pour les requêtes web
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return response()->json([
-            'success' => true,
-            'redirect' => route('login'), // Redirection après déconnexion
-            'message' => 'Déconnexion réussie'
-        ]);
+        $user = Auth::user();
+        $customClaims = ['role' => $user->role->value, 'nom' => $user->nom];
+        $newToken = JWTAuth::fromUser($user, $customClaims); // Génère un nouveau token avec les claims
+    } catch (JWTException $e) {
+        return response()->json(['error' => 'Impossible de créer le token'], 500);
     }
 
-    /**
-     * Récupérer l'utilisateur connecté
-     */
-    public function me(Request $request)
-    {
-        $user = $request->user();
+    return response()->json([
+        'access_token' => $newToken,
+        'user' => [
+            'id' => $user->id,
+            'nom' => $user->nom,
+            'email' => $user->email,
+            'role' => $user->role->value,
+        ],
+    ]);
+}
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Non authentifié'
-            ], 401);
+        public function logout()
+        {
+            try {
+                if (!Auth::guard('api')->check()) {
+                    return response()->json(['error' => 'Aucun utilisateur connecté'], 401);
+                }
+
+                Auth::guard('api')->logout();
+                return response()->json(['message' => 'Déconnecté avec succès.']);
+            } catch (JWTException $e) {
+                return response()->json(['error' => 'Erreur lors de la déconnexion.'], 500);
+            }
         }
 
-        return response()->json([
-            'success' => true,
-            'user' => $user->load('roles') // Charge les relations si nécessaire
-        ]);
-    }
+        public function me()
+        {
+            try {
+                $user = Auth::guard('api')->user();
+                if (!$user) {
+                    return response()->json(['error' => 'Utilisateur non authentifié'], 401);
+                }
 
-    /**
-     * Inscription utilisateur
-     */
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+                return response()->json([
+                    'id' => $user->id,
+                    'nom' => $user->nom,
+                    'email' => $user->email,
+                    'role' => $user->role->value,
+                ]);
+            } catch (JWTException $e) {
+                return response()->json(['error' => 'Token invalide'], 401);
+            }
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'active' => true,
-        ]);
-
-        $user->assignRole('user');
-
-        // Pour les requêtes API
-        if ($request->wantsJson() || $request->is('api/*')) {
-            $token = $user->createToken('auth_token')->plainTextToken;
-            
-            return response()->json([
-                'success' => true,
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-                'user' => $user
-            ], 201);
-        }
-
-        // Pour les requêtes web
-        Auth::login($user);
-        
-        return response()->json([
-            'success' => true,
-            'redirect' => route('profile'), // Redirection après inscription
-            'user' => $user,
-            'message' => 'Inscription réussie'
-        ]);
-    }
-
-    /**
-     * Vérifie si l'email existe déjà (pour validation frontend)
-     */
-    public function checkEmail(Request $request)
-    {
-        $exists = User::where('email', $request->email)->exists();
-        
-        return response()->json([
-            'exists' => $exists
-        ]);
-    }
 }

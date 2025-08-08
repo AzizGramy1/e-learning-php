@@ -8,17 +8,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, string ...$roles): Response
+public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        $user = $request->user();
-        
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Authentification requise');
+        try {
+            $user = JWTAuth::parseToken()->authenticate(); // Récupère l'utilisateur via JWT
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json(['error' => 'Authentification requise'], 401);
         }
 
-        if (!in_array($user->role, $roles)) {
+        if (!$user || !in_array($user->role->value, $roles)) {
             $rolesList = implode(', ', $roles);
-            abort(403, "Rôle requis : $rolesList (Votre rôle : $user->role)");
+            return response()->json([
+                'error' => "Rôle requis : $rolesList (Votre rôle : " . ($user ? $user->role->value : 'non authentifié') . ")"
+            ], 403);
         }
 
         return $next($request);

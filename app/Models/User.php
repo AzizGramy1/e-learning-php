@@ -6,9 +6,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Enums\UserRole; // Assurez-vous que l'énum UserRole est correctement importée
 
-class User extends Authenticatable
-{
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
+
+class User extends Authenticatable implements JWTSubject
+{   
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -20,7 +24,7 @@ class User extends Authenticatable
     protected $fillable = [
         'nom',
         'email',
-        'password',     // Note: 'mot_de_passe' is the French equivalent of 'password'
+        'password',     // Convention Laravel Auth
         'role',         // Rôle de l'utilisateur (étudiant, formateur, administrateur)
     ];
 
@@ -35,18 +39,15 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'role' => UserRole::class, // Cast le rôle en enum
+    ];
 
     // Un utilisateur peut avoir plusieurs certificats
     public function certificats()
@@ -72,13 +73,35 @@ class User extends Authenticatable
         return $this->hasMany(Rapport::class, 'user_id');
     }
 
-
+    // Un utilisateur peut être associé à plusieurs forums (relation inverse)
     public function forums()
     {
-        return $this->hasMany(Forum::class, 'user_id'); // Relation inverse ajoutée
+        return $this->hasMany(Forum::class, 'user_id');
     }
 
+    ////////////////////////// Méthodes de chargement des relations //////////////////////////
+    public function loadAllRelations()
+    {
+        return $this->load(['certificats', 'messages.forum', 'paiements', 'rapports']);
+    }
 
+    public static function scopeWithAllRelations($query)
+    {
+        return $query->with(['certificats', 'messages.forum', 'paiements', 'rapports']);
+    }
 
+    ////////////////////////// Méthodes JWTSubject ///////////////////////////
+    public function getJWTIdentifier()
+    {
+        return $this->getKey(); // Retourne l'ID de l'utilisateur (sub claim)
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'role' => $this->role, // Bonne pratique pour la gestion des accès
+            'nom' => $this->nom,   // Optionnel mais utile pour le frontend
+        ];
+    }
     
 }

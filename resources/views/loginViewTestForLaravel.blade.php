@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Connexion - EduTech</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -222,128 +223,112 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle password visibility
+    // 1. Toggle password visibility
     const togglePassword = document.getElementById('togglePassword');
-    if (togglePassword) {
-        const password = document.getElementById('password');
+    const password = document.getElementById('password');
+    
+    if (togglePassword && password) {
         togglePassword.addEventListener('click', function() {
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
             
-            // Change the icon
+            // Change icon
             this.innerHTML = type === 'password' ? 
-                '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>' :
-                '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>';
+                /* icône oeil fermé */ : 
+                /* icône oeil ouvert */;
         });
     }
-    
-    // Form submission with AJAX
+
+    // 2. Form submission handler
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        const submitBtn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnSpinner = document.getElementById('btnSpinner');
-        
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Clear previous errors
-            document.querySelectorAll('.text-red-400, .bg-red-500').forEach(el => el.remove());
-            document.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
+            // Get elements
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
             
-            // Show loading state
-            if (btnText && btnSpinner) {
-                btnText.classList.add('hidden');
-                btnSpinner.classList.remove('hidden');
+            // Validate CSRF token
+            if (!csrfToken) {
+                showError('Erreur de sécurité. Veuillez rafraîchir la page.');
+                return;
             }
+
+            // Set loading state
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.classList.add('cursor-not-allowed', 'opacity-75');
+                submitBtn.innerHTML = `
+                    <span class="flex items-center justify-center">
+                        <svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                            <!-- Spinner icon -->
+                        </svg>
+                        Connexion...
+                    </span>
+                `;
             }
-            
+
             try {
-                const formData = new FormData(loginForm);
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                // Prepare form data
+                const formData = new FormData(this);
                 
-                if (!csrfToken) {
-                    throw new Error('CSRF token missing');
-                }
-                
-                const response = await fetch(loginForm.action, {
+                // Send request
+                const response = await fetch(this.action, {
                     method: 'POST',
-                    body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrfToken
-                    }
+                    },
+                    body: formData
                 });
-                
+
+                // Handle response
                 const data = await response.json();
                 
                 if (!response.ok) {
                     throw data;
                 }
-                
-                if (data.success) {
-                    // Success animation
-                    if (submitBtn) {
-                        submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
-                        submitBtn.classList.add('bg-green-500', 'hover:bg-green-400');
-                    }
-                    if (btnSpinner) {
-                        btnSpinner.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Connecté avec succès !
-                        `;
-                    }
-                    
-                    // Redirect after delay
-                    setTimeout(() => {
-                        window.location.href = data.redirect || "{{ route('welcomeDadh') }}";
-                    }, 1000);
+
+                // Success case
+                if (data.success && data.redirect) {
+                    window.location.href = data.redirect;
                 } else {
-                    throw new Error(data.message || 'Une erreur est survenue');
+                    throw new Error('Réponse inattendue du serveur');
                 }
+
             } catch (error) {
-                // Reset button state
-                if (btnText && btnSpinner) {
-                    btnText.classList.remove('hidden');
-                    btnSpinner.classList.add('hidden');
-                }
+                // Error handling
+                const errorMsg = error.message || 
+                               (error.errors ? Object.values(error.errors)[0] : 'Échec de la connexion');
+                
+                showError(errorMsg);
+                
+                // Reset button
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.classList.remove('cursor-not-allowed', 'opacity-75');
+                    submitBtn.innerHTML = 'Se connecter';
                 }
-                
-                // Show errors
-                const errorMessage = error.message || 
-                                   (error.errors ? Object.values(error.errors)[0][0] : 'Identifiants incorrects');
-                
-                const errorElement = document.createElement('div');
-                errorElement.className = 'mb-4 p-3 bg-red-500 bg-opacity-20 text-red-300 rounded-lg text-sm';
-                errorElement.textContent = errorMessage;
-                loginForm.prepend(errorElement);
-                
-                // Shake form for attention
-                loginForm.classList.add('shake');
-                setTimeout(() => loginForm.classList.remove('shake'), 500);
             }
         });
     }
-    
-    // Add animation to form inputs on focus
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement?.classList?.add('ring-2', 'ring-blue-500', 'rounded-lg');
-        });
+
+    // Helper function to show errors
+    function showError(message) {
+        // Remove old errors
+        document.querySelectorAll('.form-error').forEach(el => el.remove());
         
-        input.addEventListener('blur', function() {
-            this.parentElement?.classList?.remove('ring-2', 'ring-blue-500', 'rounded-lg');
-        });
-    });
+        // Create error element
+        const errorEl = document.createElement('div');
+        errorEl.className = 'form-error mb-4 p-3 bg-red-100 text-red-700 rounded';
+        errorEl.textContent = message;
+        
+        // Insert error
+        loginForm?.prepend(errorEl);
+        
+        // Shake effect
+        loginForm?.classList.add('shake');
+        setTimeout(() => loginForm?.classList.remove('shake'), 500);
+    }
 });
 </script>
 

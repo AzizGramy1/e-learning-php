@@ -34,10 +34,10 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'throttle:api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ],
+                'throttle:api',
+                \Illuminate\Routing\Middleware\SubstituteBindings::class,
+                \Tymon\JWTAuth\Http\Middleware\Authenticate::class, // Remplace Sanctum
+            ],
     ];
 
     /**
@@ -55,8 +55,13 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         
+
+
+        'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+        'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+        'auth.jwt' => \App\Http\Middleware\JwtMiddleware::class, // Middleware personnalisé
         // Middlewares personnalisés
-        
+
         'permission' => \App\Http\Middleware\CheckPermission::class,
         'role' => \App\Http\Middleware\CheckRole::class,
         'active' => \App\Http\Middleware\CheckUserActive::class,

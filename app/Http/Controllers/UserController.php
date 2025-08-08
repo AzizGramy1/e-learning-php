@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\UserRole;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Validation\Rules\Enum;
+use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -11,363 +17,293 @@ use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
-{
-    // Constantes pour les rôles
-    const ROLE_ETUDIANT = 'etudiant';
-    const ROLE_FORMATEUR = 'formateur';
-    const ROLE_ADMIN = 'administrateur';
-
-    /**
-     * Liste paginée des utilisateurs (pour admin)
-     * GET /api/users
+{/**
+     * Liste paginée des utilisateurs
      */
     public function index(Request $request)
     {
         try {
-            $query = User::query();
-
-            // Filtrage par rôle si spécifié
-            if ($request->has('role')) {
-                $query->where('role', $request->role);
-            }
-
-            // Recherche par nom ou email
-            if ($request->has('search')) {
-                $search = $request->search;
-                $query->where(function($q) use ($search) {
+            $users = User::query()
+                ->when($request->role, fn($q, $role) => $q->where('role', $role))
+                ->when($request->search, fn($q, $search) => 
                     $q->where('nom', 'like', "%$search%")
-                      ->orWhere('email', 'like', "%$search%");
-                });
-            }
+                      ->orWhere('email', 'like', "%$search%")
+                )
+                ->withCount(['certificats', 'messages', 'paiements', 'rapports'])
+                ->orderBy('created_at', 'desc')
+                ->paginate($request->per_page ?? 10);
 
-            $users = $query->withCount(['certificats', 'messages', 'paiements', 'rapports'])
-                         ->orderBy('created_at', 'desc')
-                         ->paginate($request->per_page ?? 10);
-
-            return response()->json([
-                'success' => true,
-                'data' => $users
-            ]);
-
+            return response()->success($users);
+            
         } catch (\Exception $e) {
-            Log::error('UserController@index - ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la récupération des utilisateurs'
-            ], 500);
+            Log::error('UserController@index', ['error' => $e->getMessage()]);
+            return response()->error('Erreur lors de la récupération des utilisateurs', 500);
         }
     }
 
     /**
      * Crée un nouvel utilisateur
-     * POST /api/users
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'nom' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'mot_de_passe' => 'required|string|min:8|confirmed',
-            'role' => ['required', Rule::in([self::ROLE_ETUDIANT, self::ROLE_FORMATEUR, self::ROLE_ADMIN])],
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => ['required', new Enum(UserRole::class)],
             'avatar' => 'nullable|image|max:2048'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
             $data = $request->only(['nom', 'email', 'role']);
-            $data['mot_de_passe'] = Hash::make($request->mot_de_passe);
+            $data['password'] = Hash::make($request->password);
 
-            // Gestion de l'avatar
             if ($request->hasFile('avatar')) {
-                $path = $request->file('avatar')->store('avatars', 'public');
-                $data['avatar_url'] = asset("storage/$path");
+                $data['avatar_url'] = $this->storeAvatar($request->file('avatar'));
             }
 
             $user = User::create($data);
 
-            return response()->json([
-                'success' => true,
-                'data' => $user,
-                'message' => 'Utilisateur créé avec succès'
-            ], 201);
+            return response()->success($user, 'Utilisateur créé', 201);
 
         } catch (\Exception $e) {
-            Log::error('UserController@store - ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la création de l\'utilisateur'
-            ], 500);
+            Log::error('UserController@store', ['error' => $e->getMessage()]);
+            return response()->error('Erreur lors de la création', 500);
         }
     }
 
     /**
-     * Affiche un utilisateur spécifique
-     * GET /api/users/{id}
+     * Affiche un utilisateur
      */
     public function show($id)
     {
         try {
-            $user = User::with(['certificats', 'messages.forum', 'paiements', 'rapports'])
-                     ->findOrFail($id);
-
-            return response()->json([
-                'success' => true,
-                'data' => $user
-            ]);
-
+            $user = User::withAllRelations()->findOrFail($id);
+            return response()->success($user);
+            
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Utilisateur non trouvé'
-            ], 404);
+            return response()->error('Utilisateur non trouvé', 404);
         } catch (\Exception $e) {
-            Log::error('UserController@show - ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur serveur'
-            ], 500);
+            Log::error('UserController@show', ['error' => $e->getMessage()]);
+            return response()->error('Erreur serveur', 500);
         }
     }
 
     /**
      * Met à jour un utilisateur
-     * PUT /api/users/{id}
      */
     public function update(Request $request, $id)
     {
         try {
             $user = User::findOrFail($id);
 
-            $validator = Validator::make($request->all(), [
+            $validated = $request->validate([
                 'nom' => 'sometimes|string|max:255',
-                'email' => ['sometimes', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-                'mot_de_passe' => 'sometimes|string|min:8|confirmed',
-                'role' => ['sometimes', Rule::in([self::ROLE_ETUDIANT, self::ROLE_FORMATEUR, self::ROLE_ADMIN])],
+                'email' => ['sometimes', 'email', Rule::unique('users')->ignore($user->id)],
+                'password' => 'sometimes|string|min:8|confirmed',
+                'role' => ['sometimes', new Enum(UserRole::class)],
                 'avatar' => 'nullable|image|max:2048'
             ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
             $data = $request->only(['nom', 'email', 'role']);
-
-            if ($request->has('mot_de_passe')) {
-                $data['mot_de_passe'] = Hash::make($request->mot_de_passe);
+            
+            if ($request->password) {
+                $data['password'] = Hash::make($request->password);
             }
 
-            // Gestion de l'avatar
             if ($request->hasFile('avatar')) {
-                // Supprimer l'ancien avatar si existe
-                if ($user->avatar_url) {
-                    $oldPath = str_replace(asset('storage/'), '', $user->avatar_url);
-                    Storage::disk('public')->delete($oldPath);
-                }
-
-                $path = $request->file('avatar')->store('avatars', 'public');
-                $data['avatar_url'] = asset("storage/$path");
+                $this->deleteAvatar($user->avatar_url);
+                $data['avatar_url'] = $this->storeAvatar($request->file('avatar'));
             }
 
             $user->update($data);
 
-            return response()->json([
-                'success' => true,
-                'data' => $user,
-                'message' => 'Utilisateur mis à jour avec succès'
-            ]);
+            return response()->success($user, 'Utilisateur mis à jour');
 
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Utilisateur non trouvé'
-            ], 404);
+            return response()->error('Utilisateur non trouvé', 404);
         } catch (\Exception $e) {
-            Log::error('UserController@update - ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la mise à jour'
-            ], 500);
+            Log::error('UserController@update', ['error' => $e->getMessage()]);
+            return response()->error('Erreur lors de la mise à jour', 500);
         }
     }
 
     /**
-     * Supprime un utilisateur (soft delete)
-     * DELETE /api/users/{id}
+     * Supprime un utilisateur
      */
     public function destroy($id)
     {
         try {
             $user = User::findOrFail($id);
 
-            // Empêche l'auto-suppression
             if (auth()->id() == $user->id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Vous ne pouvez pas supprimer votre propre compte'
-                ], 403);
+                return response()->error('Auto-suppression interdite', 403);
             }
 
             $user->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Utilisateur désactivé avec succès'
-            ]);
+            return response()->success(message: 'Utilisateur désactivé');
 
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Utilisateur non trouvé'
-            ], 404);
+            return response()->error('Utilisateur non trouvé', 404);
         } catch (\Exception $e) {
-            Log::error('UserController@destroy - ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la suppression'
-            ], 500);
+            Log::error('UserController@destroy', ['error' => $e->getMessage()]);
+            return response()->error('Erreur lors de la suppression', 500);
         }
     }
 
     /**
-     * Récupère le profil de l'utilisateur connecté
-     * GET /api/profile
+     * Authentification JWT
+     */
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string'
+        ]);
+
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->error('Identifiants invalides', 401);
+        }
+
+        return $this->respondWithToken($token);
+    }
+
+    /**
+     * Déconnexion
+     */
+    public function logout()
+    {
+        auth()->logout();
+        return response()->success(message: 'Déconnexion réussie');
+    }
+
+    /**
+     * Rafraîchir le token
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
+    /**
+     * Profil utilisateur
      */
     public function profile()
     {
+        return response()->success(auth()->user()->loadAllRelations());
+    }
+
+    /**
+     * Met à jour le profil
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'nom' => 'sometimes|string|max:255',
+            'email' => ['sometimes', 'email', Rule::unique('users')->ignore($user->id)],
+            'password' => 'sometimes|string|min:8|confirmed',
+            'avatar' => 'nullable|image|max:2048'
+        ]);
+
+        $data = $request->only(['nom', 'email']);
+        
+        if ($request->password) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('avatar')) {
+            $this->deleteAvatar($user->avatar_url);
+            $data['avatar_url'] = $this->storeAvatar($request->file('avatar'));
+        }
+
+        $user->update($data);
+
+        return response()->success($user, 'Profil mis à jour');
+    }
+
+    /**
+     * Récupère les certificats d'un utilisateur
+     */
+    public function getUserCertificats($userId)
+    {
         try {
-            $user = auth()->user()->load([
-                'certificats', 
-                'messages.forum', 
-                'paiements', 
-                'rapports'
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'data' => $user
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('UserController@profile - ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la récupération du profil'
-            ], 500);
+            $user = User::with('certificats')->findOrFail($userId);
+            return response()->success($user->certificats);
+        } catch (ModelNotFoundException $e) {
+            return response()->error('Utilisateur non trouvé', 404);
         }
     }
 
     /**
-     * Met à jour le profil de l'utilisateur connecté
-     * PUT /api/profile
+     * Récupère les messages d'un utilisateur
      */
-    public function updateProfile(Request $request)
+    public function getUserMessages($userId)
     {
         try {
-            $user = auth()->user();
-
-            $validator = Validator::make($request->all(), [
-                'nom' => 'sometimes|string|max:255',
-                'email' => ['sometimes', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-                'mot_de_passe' => 'sometimes|string|min:8|confirmed',
-                'avatar' => 'nullable|image|max:2048'
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $data = $request->only(['nom', 'email']);
-
-            if ($request->has('mot_de_passe')) {
-                $data['mot_de_passe'] = Hash::make($request->mot_de_passe);
-            }
-
-            // Gestion de l'avatar
-            if ($request->hasFile('avatar')) {
-                // Supprimer l'ancien avatar si existe
-                if ($user->avatar_url) {
-                    $oldPath = str_replace(asset('storage/'), '', $user->avatar_url);
-                    Storage::disk('public')->delete($oldPath);
-                }
-
-                $path = $request->file('avatar')->store('avatars', 'public');
-                $data['avatar_url'] = asset("storage/$path");
-            }
-
-            $user->update($data);
-
-            return response()->json([
-                'success' => true,
-                'data' => $user,
-                'message' => 'Profil mis à jour avec succès'
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('UserController@updateProfile - ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la mise à jour du profil'
-            ], 500);
+            $user = User::with('messages')->findOrFail($userId);
+            return response()->success($user->messages);
+        } catch (ModelNotFoundException $e) {
+            return response()->error('Utilisateur non trouvé', 404);
         }
     }
 
-
-
-     public function login(Request $request)
+    /**
+     * Récupère les paiements d'un utilisateur
+     */
+    public function getUserPaiements($userId)
     {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt(['email' => $credentials['email'], 'mot_de_passe' => $credentials['password']])) {
-            $user = Auth::user();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Connexion réussie',
-                'user' => $user
-            ]);
+        try {
+            $user = User::with('paiements')->findOrFail($userId);
+            return response()->success($user->paiements);
+        } catch (ModelNotFoundException $e) {
+            return response()->error('Utilisateur non trouvé', 404);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Identifiants invalides'
-        ], 401);
     }
 
+    /**
+     * Récupère les rapports d'un utilisateur
+     */
+    public function getUserRapports($userId)
+    {
+        try {
+            $user = User::with('rapports')->findOrFail($userId);
+            return response()->success($user->rapports);
+        } catch (ModelNotFoundException $e) {
+            return response()->error('Utilisateur non trouvé', 404);
+        }
+    }
 
-    // Méthodes pour les relations
-public function getUserCertificats($userId)
-{
-    $user = User::with('certificats')->findOrFail($userId);
-    return response()->json($user->certificats);
-}
+    /**
+     * Formatage réponse JWT
+     */
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => auth()->user()
+        ]);
+    }
 
-public function getUserMessages($userId)
-{
-    $user = User::with('messages')->findOrFail($userId);
-    return response()->json($user->messages);
-}
+    /**
+     * Stocke un avatar
+     */
+    private function storeAvatar($file): string
+    {
+        $path = $file->store('avatars', 'public');
+        return asset("storage/$path");
+    }
 
-public function getUserPaiements($userId)
-{
-    $user = User::with('paiements')->findOrFail($userId);
-    return response()->json($user->paiements);
-}
-
-public function getUserRapports($userId)
-{
-    $user = User::with('rapports')->findOrFail($userId);
-    return response()->json($user->rapports);
-}   
-}
+    /**
+     * Supprime un avatar
+     */
+    private function deleteAvatar(?string $url): void
+    {
+        if ($url) {
+            Storage::disk('public')
+                ->delete(str_replace(asset('storage/'), '', $url));
+        }
+    }}
