@@ -38,6 +38,7 @@ class Kernel extends HttpKernel
                 \Illuminate\Routing\Middleware\SubstituteBindings::class,
                 \Tymon\JWTAuth\Http\Middleware\Authenticate::class, // Remplace Sanctum
             ],
+            
     ];
 
     /**
