@@ -4,20 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\UserRole;
+use App\Enums\UserRole;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Storage;
-
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
-{/**
+{
+    /**
      * Liste paginée des utilisateurs
      */
     public function index(Request $request)
@@ -25,7 +23,7 @@ class UserController extends Controller
         try {
             $users = User::query()
                 ->when($request->role, fn($q, $role) => $q->where('role', $role))
-                ->when($request->search, fn($q, $search) => 
+                ->when($request->search, fn($q, $search) =>
                     $q->where('nom', 'like', "%$search%")
                       ->orWhere('email', 'like', "%$search%")
                 )
@@ -34,7 +32,7 @@ class UserController extends Controller
                 ->paginate($request->per_page ?? 10);
 
             return response()->success($users);
-            
+
         } catch (\Exception $e) {
             Log::error('UserController@index', ['error' => $e->getMessage()]);
             return response()->error('Erreur lors de la récupération des utilisateurs', 500);
@@ -63,7 +61,6 @@ class UserController extends Controller
             }
 
             $user = User::create($data);
-
             return response()->success($user, 'Utilisateur créé', 201);
 
         } catch (\Exception $e) {
@@ -73,14 +70,17 @@ class UserController extends Controller
     }
 
     /**
-     * Affiche un utilisateur
+     * Affiche un utilisateur avec toutes ses relations
      */
     public function show($id)
     {
         try {
             $user = User::withAllRelations()->findOrFail($id);
+            if ($user->avatar_url) {
+                $user->avatar_url = asset("storage/{$user->avatar_url}");
+            }
             return response()->success($user);
-            
+
         } catch (ModelNotFoundException $e) {
             return response()->error('Utilisateur non trouvé', 404);
         } catch (\Exception $e) {
@@ -106,7 +106,7 @@ class UserController extends Controller
             ]);
 
             $data = $request->only(['nom', 'email', 'role']);
-            
+
             if ($request->password) {
                 $data['password'] = Hash::make($request->password);
             }
@@ -117,6 +117,9 @@ class UserController extends Controller
             }
 
             $user->update($data);
+            if ($user->avatar_url) {
+                $user->avatar_url = asset("storage/{$user->avatar_url}");
+            }
 
             return response()->success($user, 'Utilisateur mis à jour');
 
@@ -186,15 +189,29 @@ class UserController extends Controller
     }
 
     /**
-     * Profil utilisateur
+     * Profil utilisateur avec toutes les relations
      */
     public function profile()
     {
-        return response()->success(auth()->user()->loadAllRelations());
+        $user = auth()->user();
+
+    // Charger toutes les relations définies dans le modèle User
+    $user->loadAllRelations();
+
+    // S'assurer que l'avatar a le bon chemin public
+    if ($user->avatar_url) {
+        $user->avatar_url = asset("storage/{$user->avatar_url}");
+    }
+
+    // Retourner tous les champs de la table + relations
+    return response()->json([
+        'success' => true,
+        'data' => $user,
+    ]);
     }
 
     /**
-     * Met à jour le profil
+     * Met à jour le profil de l'utilisateur connecté
      */
     public function updateProfile(Request $request)
     {
@@ -208,7 +225,7 @@ class UserController extends Controller
         ]);
 
         $data = $request->only(['nom', 'email']);
-        
+
         if ($request->password) {
             $data['password'] = Hash::make($request->password);
         }
@@ -219,91 +236,71 @@ class UserController extends Controller
         }
 
         $user->update($data);
+        if ($user->avatar_url) {
+            $user->avatar_url = asset("storage/{$user->avatar_url}");
+        }
 
         return response()->success($user, 'Profil mis à jour');
     }
 
     /**
-     * Récupère les certificats d'un utilisateur
+     * Récupère une relation spécifique de l'utilisateur
      */
-    public function getUserCertificats($userId)
+    private function getUserRelation($userId, $relation)
     {
         try {
-            $user = User::with('certificats')->findOrFail($userId);
-            return response()->success($user->certificats);
+            $user = User::findOrFail($userId)->load($relation);
+            return response()->success($user->$relation);
         } catch (ModelNotFoundException $e) {
             return response()->error('Utilisateur non trouvé', 404);
         }
     }
 
-    /**
-     * Récupère les messages d'un utilisateur
-     */
-    public function getUserMessages($userId)
-    {
-        try {
-            $user = User::with('messages')->findOrFail($userId);
-            return response()->success($user->messages);
-        } catch (ModelNotFoundException $e) {
-            return response()->error('Utilisateur non trouvé', 404);
-        }
-    }
-
-    /**
-     * Récupère les paiements d'un utilisateur
-     */
-    public function getUserPaiements($userId)
-    {
-        try {
-            $user = User::with('paiements')->findOrFail($userId);
-            return response()->success($user->paiements);
-        } catch (ModelNotFoundException $e) {
-            return response()->error('Utilisateur non trouvé', 404);
-        }
-    }
-
-    /**
-     * Récupère les rapports d'un utilisateur
-     */
-    public function getUserRapports($userId)
-    {
-        try {
-            $user = User::with('rapports')->findOrFail($userId);
-            return response()->success($user->rapports);
-        } catch (ModelNotFoundException $e) {
-            return response()->error('Utilisateur non trouvé', 404);
-        }
-    }
+    public function getUserCertificats($userId) { return $this->getUserRelation($userId, 'certificats'); }
+    public function getUserMessages($userId)   { return $this->getUserRelation($userId, 'messages'); }
+    public function getUserPaiements($userId)  { return $this->getUserRelation($userId, 'paiements'); }
+    public function getUserRapports($userId)   { return $this->getUserRelation($userId, 'rapports'); }
 
     /**
      * Formatage réponse JWT
      */
     protected function respondWithToken($token)
     {
+        $user = auth()->user();
+        if ($user->avatar_url) {
+            $user->avatar_url = asset("storage/{$user->avatar_url}");
+        }
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+            'user' => $user
         ]);
     }
 
     /**
-     * Stocke un avatar
+     * Stocke un avatar et retourne le chemin relatif
      */
     private function storeAvatar($file): string
     {
-        $path = $file->store('avatars', 'public');
-        return asset("storage/$path");
+        return $file->store('avatars', 'public'); 
     }
 
     /**
      * Supprime un avatar
      */
-    private function deleteAvatar(?string $url): void
+    private function deleteAvatar(?string $path): void
     {
-        if ($url) {
-            Storage::disk('public')
-                ->delete(str_replace(asset('storage/'), '', $url));
+        if ($path) {
+            Storage::disk('public')->delete($path);
         }
-    }}
+    }
+
+
+    public function me(Request $request)
+{
+    return $this->profile();
+}
+}
+

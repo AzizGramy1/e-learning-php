@@ -1,6 +1,17 @@
 <?php
 
 namespace App\Models;
+use App\Models\Certificat;
+use App\Models\Message;
+use App\Models\Paiement;
+use App\Models\Courses;
+use App\Models\Rapport;
+use App\Models\Forum;
+use App\Models\Abonnement;
+use App\Models\Quiz;
+use App\Models\Reclamation;
+
+
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,7 +37,6 @@ class User extends Authenticatable implements JWTSubject
     'email',
     'password',
     'role',
-    'biographie',
     'avatar_url',
     'adresse',
     'niveau',
@@ -63,7 +73,6 @@ class User extends Authenticatable implements JWTSubject
     'email_verified_at' => 'datetime',
     'password' => 'hashed',
     'role' => UserRole::class,
-    'biographie' => 'string', // Assurez-vous que la biographie est une chaîne
     'date_naissance' => 'date',
     'skills' => 'array',
     'badges' => 'array',

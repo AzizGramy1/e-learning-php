@@ -35,7 +35,14 @@ Route::apiResource('quizzes', QuizController::class);
 
 // Routes protégées avec rôles
 Route::middleware('jwt.auth')->group(function () {
-    
+    Route::apiResource('users', UserController::class);
+
+    // Relations utilisateur
+    Route::get('/users/{id}/certificats', [UserController::class, 'getUserCertificats']);
+    Route::get('/users/{id}/messages', [UserController::class, 'getUserMessages']);
+    Route::get('/users/{id}/paiements', [UserController::class, 'getUserPaiements']);
+    Route::get('/users/{id}/rapports', [UserController::class, 'getUserRapports']);
+
     // Routes admin
     Route::middleware('role:administrateur')->group(function () {
         Route::get('/admin/dashboard', [UserController::class, 'adminDashboard']);
@@ -47,35 +54,4 @@ Route::middleware('jwt.auth')->group(function () {
         Route::post('/cours', [CoursController::class, 'store']);
         Route::post('/quizzes', [QuizController::class, 'store']);
     });
-
-    // Routes pour tous les utilisateurs authentifiés
-    Route::get('/users/{userId}/certificats', [CertificatController::class, 'byUser']);
-    Route::get('/users/{userId}/paiements', [PaiementController::class, 'byUser']);
-    Route::get('/forums/{forumId}/messages', [ForumController::class, 'showMessages']);
-
-    Route::get('/test/role', function () {
-        return response()->json(['message' => 'Rôle valide']);
-    })->middleware('role:administrateur');
-
-
-
-     // Gestion complète des utilisateurs (CRUD) 
-    Route::get('/users', [UserController::class, 'index']);              // Liste paginée
-    Route::post('/users', [UserController::class, 'store']);             // Créer un utilisateur
-    Route::get('/users/{id}', [UserController::class, 'show']);          // Afficher un utilisateur précis
-    Route::put('/users/{id}', [UserController::class, 'update']);        // Modifier un utilisateur
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);    // Supprimer un utilisateur
-
-    // Relations utilisateur    
-    Route::get('/users/{id}/certificats', [UserController::class, 'getUserCertificats']);
-    Route::get('/users/{id}/messages', [UserController::class, 'getUserMessages']);
-    Route::get('/users/{id}/paiements', [UserController::class, 'getUserPaiements']);
-    Route::get('/users/{id}/rapports', [UserController::class, 'getUserRapports']);
-
-
-
-
-
-
-    
 });
