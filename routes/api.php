@@ -11,8 +11,7 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\ForumController;
 
-
-
+// Test API
 Route::get('/test', function () {
     return response()->json(['message' => 'API OK']);
 });
@@ -25,19 +24,18 @@ Route::prefix('auth')->group(function () {
 });
 
 // Routes publiques (sans authentification)
-Route::middleware('api')->group(function () {
-    Route::apiResource('cours', CoursController::class);
-    Route::apiResource('users', UserController::class);
-    Route::apiResource('certificats', CertificatController::class);
-    Route::apiResource('messages', MessageController::class);
-    Route::apiResource('paiements', PaiementController::class);
-    Route::apiResource('rapports', RapportController::class);
-    Route::apiResource('forums', ForumController::class);
-    Route::apiResource('quizzes', QuizController::class);
-});
+Route::apiResource('cours', CoursController::class);
+Route::apiResource('users', UserController::class);
+Route::apiResource('certificats', CertificatController::class);
+Route::apiResource('messages', MessageController::class);
+Route::apiResource('paiements', PaiementController::class);
+Route::apiResource('rapports', RapportController::class);
+Route::apiResource('forums', ForumController::class);
+Route::apiResource('quizzes', QuizController::class);
 
 // Routes protégées avec rôles
 Route::middleware('jwt.auth')->group(function () {
+    
     // Routes admin
     Route::middleware('role:administrateur')->group(function () {
         Route::get('/admin/dashboard', [UserController::class, 'adminDashboard']);
@@ -57,5 +55,27 @@ Route::middleware('jwt.auth')->group(function () {
 
     Route::get('/test/role', function () {
         return response()->json(['message' => 'Rôle valide']);
-    })->middleware('jwt.auth', 'role:administrateur');
+    })->middleware('role:administrateur');
+
+
+
+     // Gestion complète des utilisateurs (CRUD) 
+    Route::get('/users', [UserController::class, 'index']);              // Liste paginée
+    Route::post('/users', [UserController::class, 'store']);             // Créer un utilisateur
+    Route::get('/users/{id}', [UserController::class, 'show']);          // Afficher un utilisateur précis
+    Route::put('/users/{id}', [UserController::class, 'update']);        // Modifier un utilisateur
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);    // Supprimer un utilisateur
+
+    // Relations utilisateur    
+    Route::get('/users/{id}/certificats', [UserController::class, 'getUserCertificats']);
+    Route::get('/users/{id}/messages', [UserController::class, 'getUserMessages']);
+    Route::get('/users/{id}/paiements', [UserController::class, 'getUserPaiements']);
+    Route::get('/users/{id}/rapports', [UserController::class, 'getUserRapports']);
+
+
+
+
+
+
+    
 });

@@ -16,73 +16,66 @@ class AuthController extends Controller
 {
     
     
-public function login(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'email' => 'required|email',
-        'password' => 'required|string|min:6',
-    ]);
+    public function login(Request $request)
+    {
+        // Validation des champs
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(['error' => $validator->errors()], 422);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $credentials = $request->only('email', 'password');
+
+        try {
+            // Tentative d'authentification
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'Identifiants invalides'], 401);
+            }
+
+            // Récupération de l'utilisateur authentifié via le token
+            $user = JWTAuth::user();
+
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Impossible de créer le token'], 500);
+        }
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'user' => [
+                'id' => $user->id,
+                'nom' => $user->nom,
+                'email' => $user->email,
+                'role' => $user->role->value ?? null,
+            ],
+        ]);
     }
 
-    $credentials = $request->only('email', 'password');
-
-    try {
-        if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Identifiants invalides'], 401);
+    public function logout()
+    {
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken());
+            return response()->json(['message' => 'Déconnecté avec succès.']);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Erreur lors de la déconnexion.'], 500);
         }
-
-        $user = Auth::user();
-        $customClaims = ['role' => $user->role->value, 'nom' => $user->nom];
-        $newToken = JWTAuth::fromUser($user, $customClaims); // Génère un nouveau token avec les claims
-    } catch (JWTException $e) {
-        return response()->json(['error' => 'Impossible de créer le token'], 500);
     }
 
-    return response()->json([
-        'access_token' => $newToken,
-        'user' => [
-            'id' => $user->id,
-            'nom' => $user->nom,
-            'email' => $user->email,
-            'role' => $user->role->value,
-        ],
-    ]);
-}
-
-        public function logout()
-        {
-            try {
-                if (!Auth::guard('api')->check()) {
-                    return response()->json(['error' => 'Aucun utilisateur connecté'], 401);
-                }
-
-                Auth::guard('api')->logout();
-                return response()->json(['message' => 'Déconnecté avec succès.']);
-            } catch (JWTException $e) {
-                return response()->json(['error' => 'Erreur lors de la déconnexion.'], 500);
+    public function me()
+    {
+        try {
+            $user = JWTAuth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Utilisateur non authentifié'], 401);
             }
+
+            return response()->json($user);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Token invalide'], 401);
         }
-
-        public function me()
-        {
-            try {
-                $user = Auth::guard('api')->user();
-                if (!$user) {
-                    return response()->json(['error' => 'Utilisateur non authentifié'], 401);
-                }
-
-                return response()->json([
-                    'id' => $user->id,
-                    'nom' => $user->nom,
-                    'email' => $user->email,
-                    'role' => $user->role->value,
-                ]);
-            } catch (JWTException $e) {
-                return response()->json(['error' => 'Token invalide'], 401);
-            }
-        }
-
+    }
 }

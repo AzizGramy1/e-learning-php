@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         User::create([
             'nom' => 'Admin',
             'email' => 'admin@example.com',
-            'mot_de_passe' => Hash::make('password'), // Mot de passe : "password"
+            'password' => Hash::make('password'), // Mot de passe : "password"
             'role' => 'administrateur',
         ]);
 
@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
         User::create([
             'nom' => 'Formateur',
             'email' => 'formateur@example.com',
-            'mot_de_passe' => Hash::make('password'), // Mot de passe : "password"
+            'password' => Hash::make('password'), // Mot de passe : "password"
             'role' => 'formateur',
         ]);
 
@@ -31,7 +31,16 @@ class UserSeeder extends Seeder
         User::create([
             'nom' => 'Étudiant',
             'email' => 'etudiant@example.com',
-            'mot_de_passe' => Hash::make('password'), // Mot de passe : "password"
+            'password' => Hash::make('password'), // Mot de passe : "password"
+            'role' => 'étudiant',
+        ]);
+
+
+        // Créer un étudiant
+        User::create([
+            'nom' => 'Aziz',
+            'email' => 'Grami.mohamed@esprit.tn',
+            'password' => Hash::make('password'), // Mot de passe : "password"
             'role' => 'étudiant',
         ]);
 
@@ -41,7 +50,7 @@ class UserSeeder extends Seeder
             User::create([
                 'nom' => 'Asma ' . $i,
                 'email' => 'HobDyelli' . $i . '@example.com',
-                'mot_de_passe' => Hash::make('password'), // Mot de passe : "password"
+                'password' => Hash::make('password'), // Mot de passe : "password"
                 'role' => $roles[array_rand($roles)], // Rôle aléatoire
             ]);
         }

@@ -218,7 +218,7 @@
                 
                 // Add success animation
                 const detailsContainer = document.getElementById('certificateDetails');
-                detailsContainer.classList.add('animate__animated', 'animate__tada');
+                   detailsContainer.classList.add('animate__animated', 'animate__tada');
                 setTimeout(() => {
                     detailsContainer.classList.remove('animate__animated', 'animate__tada');
                 }, 1000);

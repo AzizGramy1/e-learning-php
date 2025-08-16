@@ -22,11 +22,27 @@ class User extends Authenticatable implements JWTSubject
      * @var list<string>
      */
     protected $fillable = [
-        'nom',
-        'email',
-        'password',     // Convention Laravel Auth
-        'role',         // Rôle de l'utilisateur (étudiant, formateur, administrateur)
-    ];
+    'nom',
+    'email',
+    'password',
+    'role',
+    'biographie',
+    'avatar_url',
+    'adresse',
+    'niveau',
+    'telephone',
+    'date_naissance',
+    'langues',
+    'progression',
+    'heures',
+    'skills',
+    'badges',
+    'social_links',
+    'activities',
+    'education',
+    'experience',
+    'goals' 
+];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -44,10 +60,19 @@ class User extends Authenticatable implements JWTSubject
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'role' => UserRole::class, // Cast le rôle en enum
-    ];
+    'email_verified_at' => 'datetime',
+    'password' => 'hashed',
+    'role' => UserRole::class,
+    'biographie' => 'string', // Assurez-vous que la biographie est une chaîne
+    'date_naissance' => 'date',
+    'skills' => 'array',
+    'badges' => 'array',
+    'social_links' => 'array',
+    'activities' => 'array',
+    'education' => 'array',
+    'experience' => 'array',
+    'goals' => 'array'
+];
 
     // Un utilisateur peut avoir plusieurs certificats
     public function certificats()
