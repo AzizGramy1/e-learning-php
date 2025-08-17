@@ -298,9 +298,32 @@ class UserController extends Controller
     }
 
 
+    
+ //// retourne le profil de l'utilisateur connecté      
+
     public function me(Request $request)
 {
     return $this->profile();
 }
+
+/// fonction des cours d'un utilisateur
+
+// // Récupère les cours d'un utilisateur spécifique 
+
+public function getUserCourses($userId)
+{
+    try {
+        $user = User::with('courses')->findOrFail($userId);
+
+        return response()->success($user->courses);
+
+    } catch (ModelNotFoundException $e) {
+        return response()->error('Utilisateur non trouvé', 404);
+    } catch (\Exception $e) {
+        \Log::error('UserController@getUserCourses', ['error' => $e->getMessage()]);
+        return response()->error('Erreur serveur', 500);
+    }
+}
+
 }
 

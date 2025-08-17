@@ -83,6 +83,17 @@ class User extends Authenticatable implements JWTSubject
     'goals' => 'array'
 ];
 
+
+    // Un étudiant peut s’inscrire à plusieurs cours  (une relation many-to-many entre User et Course)
+    // App\Models\User.php
+public function courses()
+{
+    return $this->belongsToMany(Course::class, 'course_user', 'user_id', 'course_id')
+                ->withTimestamps()
+                ->withPivot('progression', 'date_inscription');
+}
+
+
     // Un utilisateur peut avoir plusieurs certificats
     public function certificats()
     {
