@@ -37,16 +37,26 @@ Route::apiResource('quizzes', QuizController::class);
 Route::middleware('jwt.auth')->group(function () {
     Route::apiResource('users', UserController::class);
 
-    // Relations utilisateur
+    // Relations utilisateur CRUD 
     Route::get('/users/{id}/certificats', [UserController::class, 'getUserCertificats']);
     Route::get('/users/{id}/messages', [UserController::class, 'getUserMessages']);
     Route::get('/users/{id}/paiements', [UserController::class, 'getUserPaiements']);
     Route::get('/users/{id}/rapports', [UserController::class, 'getUserRapports']);
 
+    // 🔹 Récupérer les cours d’un utilisateur
+    Route::get('/users/{id}/courses', [UserController::class, 'getUserCourses']); // Récupérer les cours d’un utilisateur
+
+
+
+    // 🔹 Routes spécifiques certificats
+    Route::get('/certificats/user/{userId}', [CertificatController::class, 'getByUser']);  // Certificats d’un utilisateur
+    Route::get('/certificats/verify/{code}', [CertificatController::class, 'verifyByCode']); // Vérifier certificat par code
+    Route::get('/certificats/{id}/download', [CertificatController::class, 'download']); // Télécharger un certificat
+
     // Routes admin
     Route::middleware('role:administrateur')->group(function () {
-        Route::get('/admin/dashboard', [UserController::class, 'adminDashboard']);
-        Route::post('/users/{id}/promote', [UserController::class, 'promoteUser']);
+        Route::get('/admin/dashboard', [UserController::class, 'adminDashboard']); // Dashboard admin
+        Route::post('/users/{id}/promote', [UserController::class, 'promoteUser']); // Promouvoir un utilisateur
     });
 
     // Routes formateur

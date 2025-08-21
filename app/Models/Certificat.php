@@ -12,10 +12,14 @@ class Certificat extends Model
      * @var array
      */
     protected $fillable = [
-        'utilisateur_id', // ID de l'utilisateur qui reçoit le certificat
-        'cours_id',       // ID du cours pour lequel le certificat est émis
-        'date_émission',  // Date d'émission du certificat
-        'code_certificat', // Code unique du certificat (ex. pour vérification)
+        'utilisateur_id',        // Référence à l'utilisateur
+        'cours_id',              // Référence au cours
+        'date_emission',         // Date d'émission (renommé sans accent pour cohérence DB)
+        'code_certificat',       // Code unique de vérification
+        'note',                  // Note obtenue (ex: 85%)
+        'description_obtention', // Texte : "Certificat obtenu pour ..."
+        'mention',               // (optionnel) Ex: "Excellent", "Honorable", "Top 10%"
+        'heures',                // (optionnel) Heures de formation complétées
     ];
 
     /**
@@ -24,13 +28,11 @@ class Certificat extends Model
      * @var array
      */
     protected $casts = [
-        'date_émission' => 'datetime', // Convertit la date d'émission en objet Carbon
+        'date_emission' => 'datetime',
     ];
 
     /**
      * Relation avec l'utilisateur.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function utilisateur()
     {
@@ -38,14 +40,10 @@ class Certificat extends Model
     }
 
     /**
-     * Relation avec le cours.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Relation avec le cours. //relation avec le cours ou le certificat a été obtenu
      */
     public function cours()
     {
         return $this->belongsTo(Cours::class, 'cours_id');
     }
-
-    
 }

@@ -315,15 +315,25 @@ public function getUserCourses($userId)
     try {
         $user = User::with('courses')->findOrFail($userId);
 
-        return response()->success($user->courses);
+        return response()->json([
+            'success' => true,
+            'data' => $user->courses,
+        ], 200);
 
     } catch (ModelNotFoundException $e) {
-        return response()->error('Utilisateur non trouvé', 404);
+        return response()->json([
+            'success' => false,
+            'message' => 'Utilisateur non trouvé',
+        ], 404);
     } catch (\Exception $e) {
         \Log::error('UserController@getUserCourses', ['error' => $e->getMessage()]);
-        return response()->error('Erreur serveur', 500);
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur serveur',
+        ], 500);
     }
 }
+
 
 }
 

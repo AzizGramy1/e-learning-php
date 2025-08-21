@@ -10,32 +10,20 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Cours;
-use App\Models\Message;
-use App\Models\Forum;
-use App\Models\Quiz;
-use App\Models\Question;
-use App\Models\Reponse;
 
 class CertificatController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Lister tous les certificats avec les relations utilisateur + cours
      */
     public function index()
     {
-        return response()->json(Certificat::all());
+        $certificats = Certificat::with(['utilisateur', 'cours'])->get();
+        return response()->json($certificats);
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Créer un nouveau certificat
      */
     public function store(Request $request)
     {
@@ -45,21 +33,23 @@ class CertificatController extends Controller
                 'cours_id' => 'required|exists:courses,id',
                 'date_émission' => 'required|date',
                 'code_certificat' => 'required|string|unique:certificats,code_certificat',
+                'note' => 'nullable|numeric|min:0|max:100',
+                'description_obtention' => 'nullable|string|max:255',
             ]);
 
             $certificat = Certificat::create($validated);
-            return response()->json($certificat, 201);
+            return response()->json($certificat->load(['utilisateur', 'cours']), 201);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
     }
 
     /**
-     * Display the specified resource.
+     * Afficher un certificat précis avec relations
      */
     public function show(string $id)
     {
-        $certificat = Certificat::find($id);
+        $certificat = Certificat::with(['utilisateur', 'cours'])->find($id);
         if (!$certificat) {
             return response()->json(['message' => 'Certificat non trouvé'], 404);
         }
@@ -67,15 +57,7 @@ class CertificatController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Mettre à jour un certificat
      */
     public function update(Request $request, string $id)
     {
@@ -90,17 +72,19 @@ class CertificatController extends Controller
                 'cours_id' => 'sometimes|exists:courses,id',
                 'date_émission' => 'sometimes|date',
                 'code_certificat' => 'sometimes|string|unique:certificats,code_certificat,' . $id,
+                'note' => 'sometimes|numeric|min:0|max:100',
+                'description_obtention' => 'sometimes|string|max:255',
             ]);
 
             $certificat->update($validated);
-            return response()->json($certificat);
+            return response()->json($certificat->load(['utilisateur', 'cours']));
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprimer un certificat
      */
     public function destroy(string $id)
     {
@@ -111,6 +95,49 @@ class CertificatController extends Controller
         
         $certificat->delete();
         return response()->json(['message' => 'Certificat supprimé avec succès']);
+    }
 
+    /**
+     * 📌 Récupérer tous les certificats d’un utilisateur donné
+     */
+    public function getByUser($userId)
+    {
+        $certificats = Certificat::with('cours')->where('utilisateur_id', $userId)->get();
+        if ($certificats->isEmpty()) {
+            return response()->json(['message' => 'Aucun certificat trouvé pour cet utilisateur'], 404);
+        }
+        return response()->json($certificats);
+    }
+
+    /**
+     * 📌 Vérifier un certificat via son code unique
+     */
+    public function verifyByCode($code)
+    {
+        $certificat = Certificat::with(['utilisateur', 'cours'])->where('code_certificat', $code)->first();
+        if (!$certificat) {
+            return response()->json(['message' => 'Certificat invalide ou inexistant'], 404);
+        }
+        return response()->json([
+            'message' => 'Certificat valide ✅',
+            'certificat' => $certificat
+        ]);
+    }
+
+    /**
+     * 📌 Télécharger un certificat en JSON (plus tard tu pourras le transformer en PDF)
+     */
+    public function download($id)
+    {
+        $certificat = Certificat::with(['utilisateur', 'cours'])->find($id);
+        if (!$certificat) {
+            return response()->json(['message' => 'Certificat non trouvé'], 404);
+        }
+
+        // Ici tu pourrais générer un PDF avec dompdf ou snappy
+        return response()->json([
+            'certificat' => $certificat,
+            'message' => 'Téléchargement du certificat simulé (à remplacer par PDF)'
+        ]);
     }
 }
