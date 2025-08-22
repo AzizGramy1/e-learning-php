@@ -45,13 +45,15 @@ Route::middleware('jwt.auth')->group(function () {
 
     // 🔹 Récupérer les cours d’un utilisateur
     Route::get('/users/{id}/courses', [UserController::class, 'getUserCourses']); // Récupérer les cours d’un utilisateur
-
+    
 
 
     // 🔹 Routes spécifiques certificats
-    Route::get('/certificats/user/{userId}', [CertificatController::class, 'getByUser']);  // Certificats d’un utilisateur
+    Route::get('/certificats/user/{id}', [CertificatController::class, 'getUserCertificats']);
     Route::get('/certificats/verify/{code}', [CertificatController::class, 'verifyByCode']); // Vérifier certificat par code
     Route::get('/certificats/{id}/download', [CertificatController::class, 'download']); // Télécharger un certificat
+    Route::get('/mes-certificats', [CertificatController::class, 'mesCertificats'])->middleware('jwt.auth');
+
 
     // Routes admin
     Route::middleware('role:administrateur')->group(function () {

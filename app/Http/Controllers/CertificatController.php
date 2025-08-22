@@ -3,13 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificat;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
+use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\Rules\Exists;
+use Illuminate\Validation\Rules\Unique;
+use Illuminate\Validation\Rules\RequiredIf;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
-use App\Models\Cours;
+use App\Models\Course;
 
 class CertificatController extends Controller
 {
@@ -29,7 +39,7 @@ class CertificatController extends Controller
     {
         try {
             $validated = $request->validate([
-                'utilisateur_id' => 'required|exists:users,id',
+                'user_id' => 'required|exists:users,id',
                 'cours_id' => 'required|exists:courses,id',
                 'date_émission' => 'required|date',
                 'code_certificat' => 'required|string|unique:certificats,code_certificat',
@@ -138,6 +148,23 @@ class CertificatController extends Controller
         return response()->json([
             'certificat' => $certificat,
             'message' => 'Téléchargement du certificat simulé (à remplacer par PDF)'
+        ]);
+    }
+
+
+    public function mesCertificats()
+    {
+        $user = Auth::user(); // l’utilisateur connecté
+        if (!$user) {
+            return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+        }
+
+        // Récupérer ses certificats via la relation
+        $certificats = $user->certificats;  
+
+        return response()->json([
+            'success' => true,
+            'data' => $certificats
         ]);
     }
 }

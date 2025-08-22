@@ -28,7 +28,7 @@ class Certificat extends Model
      * @var array
      */
     protected $casts = [
-        'date_emission' => 'datetime',
+        'date_émission' => 'datetime',
     ];
 
     /**
@@ -36,7 +36,8 @@ class Certificat extends Model
      */
     public function utilisateur()
     {
-        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
+        return $this->belongsTo(User::class, 'user_id');
+
     }
 
     /**
@@ -44,6 +45,6 @@ class Certificat extends Model
      */
     public function cours()
     {
-        return $this->belongsTo(Cours::class, 'cours_id');
+        return $this->belongsTo(Course::class, 'cours_id');
     }
 }
