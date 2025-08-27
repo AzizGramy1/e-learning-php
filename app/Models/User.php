@@ -133,7 +133,76 @@ public function courses()
     public static function scopeWithAllRelations($query)
     {
         return $query->with(['certificats', 'messages.forum', 'paiements', 'rapports']);
+
     }
+
+
+
+    /**
+     * Vérifie si l'utilisateur est étudiant
+     */
+    public function getEstEtudiantAttribute(): bool
+    {
+        return $this->role === UserRole::ETUDIANT;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est formateur
+     */
+    public function getEstFormateurAttribute(): bool
+    {
+        return $this->role === UserRole::FORMATEUR;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est admin
+     */
+    public function getEstAdminAttribute(): bool
+    {
+        return $this->role === UserRole::ADMINISTRATEUR;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est instructeur d'une réunion
+     */
+    public function estInstructeurDe(Reunion $reunion): bool
+    {
+        return $this->id === $reunion->instructeur_id;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est participant d'une réunion
+     */
+    public function estParticipantDe(Reunion $reunion): bool
+    {
+        return $this->reunionsParticipant()
+                    ->where('reunion_id', $reunion->id)
+                    ->exists();
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut créer une réunion
+     */
+    public function peutCreerReunion(): bool
+    {
+        return $this->est_formateur || $this->est_admin;
+    }
+
+
+     public function reunions()
+    {
+        return $this->belongsToMany(Reunion::class, 'reunion_user', 'user_id', 'reunion_id')
+                    ->withPivot('statut_participation', 'date_inscription', 'note')
+                    ->withTimestamps();
+    }
+
+
+
+
+
+
+
+
 
     ////////////////////////// Méthodes JWTSubject ///////////////////////////
     public function getJWTIdentifier()

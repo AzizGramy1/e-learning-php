@@ -10,6 +10,8 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\ReunionController; 
+
 
 // Test API
 Route::get('/test', function () {
@@ -66,4 +68,38 @@ Route::middleware('jwt.auth')->group(function () {
         Route::post('/cours', [CoursController::class, 'store']);
         Route::post('/quizzes', [QuizController::class, 'store']);
     });
+
+
+
+    Route::prefix('reunions')->group(function () {
+
+    // Routes publiques ou filtrables
+    Route::get('/', [ReunionController::class, 'index']);
+    Route::get('/disponibles', [ReunionController::class, 'disponibles']);
+    Route::get('/populaires/{limit?}', [ReunionController::class, 'populaires']);
+    Route::get('/statistiques', [ReunionController::class, 'statistiques']);
+    Route::get('/mes-reunions', [ReunionController::class, 'mesReunions'])->middleware('jwt.auth');
+
+    // Routes sur une réunion spécifique
+    Route::get('/{id}', [ReunionController::class, 'show']);
+    Route::post('/', [ReunionController::class, 'store']);
+    Route::put('/{id}', [ReunionController::class, 'update']);
+    Route::delete('/{id}', [ReunionController::class, 'destroy']);
+
+    // Inscription / désinscription
+    Route::post('/{reunionId}/rejoindre', [ReunionController::class, 'rejoindreReunion'])->middleware('jwt.auth');
+    Route::post('/{reunionId}/quitter', [ReunionController::class, 'quitterReunion'])->middleware('jwt.auth');
+    Route::get('/{reunionId}/est-inscrit', [ReunionController::class, 'estInscrit'])->middleware('jwt.auth');
+
+    // Gestion des participants (admin / instructeur)
+    Route::post('/{reunionId}/ajouter-participant/{userId}', [ReunionController::class, 'ajouterParticipant']);
+    Route::post('/{reunionId}/retirer-participant/{userId}', [ReunionController::class, 'retirerParticipant']);
+
+    // Actions sur la réunion
+    Route::post('/{id}/demarrer', [ReunionController::class, 'demarrer']);
+    Route::post('/{id}/terminer', [ReunionController::class, 'terminer']);
+    Route::post('/{id}/annuler', [ReunionController::class, 'annuler']);
+});
+
+
 });
