@@ -11,6 +11,8 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RapportController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ReunionController; 
+use App\Http\Controllers\DevoirController;
+use App\Http\Controllers\RenduDevoirControlleur;
 
 
 // Test API
@@ -70,6 +72,40 @@ Route::middleware('jwt.auth')->group(function () {
     });
 
 
+    // Routes spécifiques pour les devoirs
+Route::prefix('devoirs')->group(function () {
+    // Lister les devoirs par professeur
+    Route::get('/professeur/{professeurId}', [DevoirController::class, 'getByProfesseur']);
+
+    // Lister les devoirs par étudiant (avec rendus)
+    Route::get('/etudiant/{etudiantId}', [DevoirController::class, 'getByEtudiant']);
+
+    // Rechercher par titre
+    Route::get('/search/titre', [DevoirController::class, 'searchByTitre']);
+
+    // Rechercher par date limite
+    Route::get('/search/date', [DevoirController::class, 'searchByDate']);
+
+    // Devoirs en retard (non rendus)
+    Route::get('/en-retard', [DevoirController::class, 'devoirsEnRetard']);
+
+    // Devoirs à venir
+    Route::get('/a-venir', [DevoirController::class, 'devoirsAVenir']);
+
+    // Statistiques : nombre de rendus par devoir
+    Route::get('/{id}/stats-rendus', [DevoirController::class, 'statsRendus']);
+
+    // Exporter les devoirs en JSON
+    Route::get('/export/json', [DevoirController::class, 'exportJson']);
+
+    // Exporter les devoirs en CSV
+    Route::get('/export/csv', [DevoirController::class, 'exportCsv']);
+
+    // Supprimer tous les rendus d’un devoir
+    Route::delete('/{id}/delete-rendus', [DevoirController::class, 'deleteRendus']);
+});
+
+
 
     Route::prefix('reunions')->group(function () {
 
@@ -99,6 +135,11 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/{id}/demarrer', [ReunionController::class, 'demarrer']);
     Route::post('/{id}/terminer', [ReunionController::class, 'terminer']);
     Route::post('/{id}/annuler', [ReunionController::class, 'annuler']);
+
+
+
+
+    
 });
 
 
