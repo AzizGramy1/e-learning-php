@@ -74,6 +74,11 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Routes spécifiques pour les devoirs
 Route::prefix('devoirs')->group(function () {
+
+    Route::get('/etudiant/{etudiantId}/a-venir-non-rendus', [DevoirController::class, 'devoirsAVenirNonRendus']);
+
+
+    
     // Lister les devoirs par professeur
     Route::get('/professeur/{professeurId}', [DevoirController::class, 'getByProfesseur']);
 

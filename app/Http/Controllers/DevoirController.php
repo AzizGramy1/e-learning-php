@@ -171,4 +171,37 @@ class DevoirController extends Controller
 
         return response()->json(['message' => 'Tous les rendus supprimés pour ce devoir']);
     }
+
+    /**
+     * 📌 Obtenir les devoirs à venir pour un étudiant spécifique (avec rendus)
+     */
+
+    public function devoirsAVenirEtudiant($etudiantId)
+{
+    $devoirs = Devoir::where('date_limite', '>', now())
+        ->whereHas('rendus', function ($query) use ($etudiantId) {
+            $query->where('user_id', $etudiantId);
+        })
+        ->get();
+
+    return response()->json($devoirs);
+}
+
+
+    /**
+     * 📌 Obtenir les devoirs à venir non rendus pour un étudiant spécifique
+     */
+public function devoirsAVenirNonRendus($etudiantId)
+{
+    $today = now();
+
+    $devoirs = Devoir::where('date_limite', '>', $today)
+        ->whereDoesntHave('soumissions', function ($query) use ($etudiantId) {
+            $query->where('user_id', $etudiantId);
+        })
+        ->get();
+
+    return response()->json($devoirs);
+}
+
 }
