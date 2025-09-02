@@ -204,4 +204,19 @@ public function devoirsAVenirNonRendus($etudiantId)
     return response()->json($devoirs);
 }
 
+
+/**
+ * 📌 Rechercher un devoir par son ID
+ */
+public function searchById($id)
+{
+    $devoir = Devoir::find($id);
+
+    if (!$devoir) {
+        return response()->json(['message' => 'Devoir introuvable'], 404);
+    }
+
+    return response()->json($devoir);
+}
+
 }

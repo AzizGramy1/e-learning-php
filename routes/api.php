@@ -108,6 +108,10 @@ Route::prefix('devoirs')->group(function () {
 
     // Supprimer tous les rendus d’un devoir
     Route::delete('/{id}/delete-rendus', [DevoirController::class, 'deleteRendus']);
+
+    // Recherche par ID du devoir 
+    Route::get('/search/{id}', [DevoirController::class, 'searchById']);
+
 });
 
 
