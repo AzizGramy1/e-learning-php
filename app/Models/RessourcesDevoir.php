@@ -5,19 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class InstructionDevoir extends Model
+class RessourceDevoir extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'devoir_id', // 🔗 clé étrangère
-        'title',
+        'name',
         'description',
-        'points',
-        'sousPoints'
+        'icon',
+        'iconType',
+        'linkName',
+        'linkDescription'
     ];
 
-    // 🔹 Relation inverse : une instruction appartient à un devoir
+    // 🔹 Relation inverse : une ressource appartient à un devoir
     public function devoir()
     {
         return $this->belongsTo(Devoir::class);

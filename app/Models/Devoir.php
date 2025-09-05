@@ -60,4 +60,16 @@ class Devoir extends Model
     {
         return $this->hasMany(RenduDevoir::class);
     }
+
+    // 🔹 Relation : un devoir peut avoir plusieurs instructions
+    public function instructions()
+    {
+        return $this->hasMany(InstructionDevoir::class);
+    }
+
+    // 🔹 Relation : un devoir peut avoir plusieurs ressources
+    public function ressources()
+    {
+        return $this->hasMany(RessourceDevoir::class);
+    }
 }

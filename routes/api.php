@@ -13,6 +13,10 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ReunionController; 
 use App\Http\Controllers\DevoirController;
 use App\Http\Controllers\RenduDevoirControlleur;
+use App\Http\Controllers\InstructionDevoirController;
+use App\Http\Controllers\RessourceDevoirController;
+
+
 
 
 // Test API
@@ -27,6 +31,13 @@ Route::prefix('auth')->group(function () {
     Route::get('/me', [AuthController::class, 'me'])->middleware('jwt.auth');
 });
 
+
+
+
+
+
+
+
 // Routes publiques (sans authentification)
 Route::apiResource('cours', CoursController::class);
 Route::apiResource('users', UserController::class);
@@ -39,6 +50,49 @@ Route::apiResource('quizzes', QuizController::class);
 
 // Routes protégées avec rôles
 Route::middleware('jwt.auth')->group(function () {
+
+
+
+Route::prefix('courses')->group(function () {
+    // CRUD de base
+    Route::get('/', [CoursController::class, 'index']);          // Tous les cours
+    Route::post('/', [CoursController::class, 'store']);         // Créer un cours
+    Route::get('/{id}', [CoursController::class, 'show']);       // Voir un cours par ID
+    Route::put('/{id}', [CoursController::class, 'update']);     // Mettre à jour un cours
+    Route::delete('/{id}', [CoursController::class, 'destroy']); // Supprimer un cours
+
+    // Relations avec les utilisateurs
+    Route::post('/{courseId}/inscrire', [CoursController::class, 'inscrire']);      // Inscrire un utilisateur
+    Route::delete('/{courseId}/desinscrire/{userId}', [CoursController::class, 'desinscrire']); // Désinscrire un utilisateur
+    Route::get('/{courseId}/etudiants', [CoursController::class, 'getEtudiants']);  // Liste des étudiants du cours
+    Route::get('/user/{userId}', [CoursController::class, 'getCoursesByUser']);     // Cours d’un utilisateur
+
+    // Détails complets
+    Route::get('/{id}/detail', [CoursController::class, 'detail']); // Détail d’un cours avec état d’inscription
+});
+
+    // 🔹 Routes pour InstructionDevoir
+Route::prefix('instructions')->group(function () {
+    Route::get('/', [InstructionDevoirController::class, 'index']);          // GET toutes les instructions
+    Route::post('/', [InstructionDevoirController::class, 'store']);         // POST nouvelle instruction
+    Route::get('/{id}', [InstructionDevoirController::class, 'show']);       // GET instruction par ID
+    Route::get('/name/{title}', [InstructionDevoirController::class, 'getByName']); // GET par nom
+    Route::put('/{id}', [InstructionDevoirController::class, 'update']);     // PUT maj
+    Route::delete('/{id}', [InstructionDevoirController::class, 'destroy']); // DELETE
+});
+
+// 🔹 Routes pour RessourceDevoir
+Route::prefix('ressources')->group(function () {
+    Route::get('/', [RessourceDevoirController::class, 'index']);          // GET toutes les ressources
+    Route::post('/', [RessourceDevoirController::class, 'store']);         // POST nouvelle ressource
+    Route::get('/{id}', [RessourceDevoirController::class, 'show']);       // GET ressource par ID
+    Route::get('/name/{name}', [RessourceDevoirController::class, 'getByName']); // GET par nom
+    Route::put('/{id}', [RessourceDevoirController::class, 'update']);     // PUT maj
+    Route::delete('/{id}', [RessourceDevoirController::class, 'destroy']); // DELETE
+});
+
+
+
     Route::apiResource('users', UserController::class);
 
     // Relations utilisateur CRUD 
@@ -131,7 +185,7 @@ Route::prefix('devoirs')->group(function () {
     Route::put('/{id}', [ReunionController::class, 'update']);
     Route::delete('/{id}', [ReunionController::class, 'destroy']);
 
-    // Inscription / désinscription
+    // Inscription / désinscription à une réunion
     Route::post('/{reunionId}/rejoindre', [ReunionController::class, 'rejoindreReunion'])->middleware('jwt.auth');
     Route::post('/{reunionId}/quitter', [ReunionController::class, 'quitterReunion'])->middleware('jwt.auth');
     Route::get('/{reunionId}/est-inscrit', [ReunionController::class, 'estInscrit'])->middleware('jwt.auth');

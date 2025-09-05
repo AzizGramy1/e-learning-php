@@ -3,6 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Cours;
+use App\Models\Question;
+use App\Models\Certificat;
+use App\Models\ModuleCourse;    
 
 class Quiz extends Model
 {
@@ -81,5 +88,13 @@ class Quiz extends Model
         return $this->est_actif 
             && ($this->date_ouverture <= $now) 
             && ($this->date_fermeture >= $now);
+    }
+
+
+    // Relation avec le module
+    public function module()
+    {
+        return $this->belongsTo(ModuleCourse::class, 'module_id'); 
+        // 'module_id' doit être la colonne dans la table quizzes qui référence module_courses.id
     }
 }
