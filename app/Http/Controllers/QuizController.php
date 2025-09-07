@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Certificat;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 
 class QuizController extends Controller
@@ -154,6 +155,112 @@ class QuizController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Quiz supprimé avec succès'
+        ]);
+    }
+
+
+     /**
+     * GET /quizzes/module/{moduleId}
+     * Affiche tous les quiz d’un module (actifs et disponibles)
+     */
+    public function getQuizzesByModule($moduleId)
+    {
+        try {
+            $quizzes = Quiz::with('module')
+                ->where('module_id', $moduleId)
+                ->actif() // scope pour quiz actifs
+                ->get()
+                ->filter(function($quiz) {
+                    return $quiz->estDisponible();
+                });
+
+            return response()->json([
+                'success' => true,
+                'data' => $quizzes
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Erreur lors de la récupération des quiz du module $moduleId : " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Erreur serveur'], 500);
+        }
+    }
+
+    /**
+     * GET /quizzes/{id}/questions
+     * Récupère toutes les questions d’un quiz
+     */
+    public function getQuestions($id)
+    {
+        $quiz = Quiz::with('questions')->find($id);
+
+        if (!$quiz) {
+            return response()->json(['success' => false, 'message' => 'Quiz introuvable'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $quiz->questions
+        ]);
+    }
+
+    /**
+     * GET /quizzes/{id}/correction
+     * Récupère la correction d’un quiz pour l’utilisateur connecté
+     * Ici on suppose que tu as un modèle UserQuiz ou Result pour stocker les réponses
+     */
+    public function getCorrection($id)
+    {
+        $user = Auth::user();
+        $quiz = Quiz::with('questions')->find($id);
+
+        if (!$quiz) {
+            return response()->json(['success' => false, 'message' => 'Quiz introuvable'], 404);
+        }
+
+        // Exemple : on suppose une relation $quiz->results() vers les réponses des utilisateurs
+        $result = $quiz->results()->where('user_id', $user->id)->first();
+
+        if (!$result) {
+            return response()->json(['success' => false, 'message' => 'Quiz non encore passé'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'quiz' => $quiz,
+                'result' => $result,
+            ]
+        ]);
+    }
+
+    /**
+     * GET /quizzes/available
+     * Récupère tous les quiz disponibles pour l’utilisateur (actifs et ouverts)
+     */
+    public function getAvailableQuizzes()
+    {
+        $quizzes = Quiz::actif()->get()->filter(function($quiz){
+            return $quiz->estDisponible();
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $quizzes
+        ]);
+    }
+
+    /**
+     * GET /quizzes/history
+     * Historique des quiz passés par l’utilisateur
+     */
+    public function getHistory()
+    {
+        $user = Auth::user();
+        // Exemple : on suppose un modèle Result ou UserQuiz
+        $results = $user->results()->with('quiz')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $results
         ]);
     }
 }

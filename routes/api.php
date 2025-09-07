@@ -15,6 +15,9 @@ use App\Http\Controllers\DevoirController;
 use App\Http\Controllers\RenduDevoirControlleur;
 use App\Http\Controllers\InstructionDevoirController;
 use App\Http\Controllers\RessourceDevoirController;
+use App\Http\Controllers\ModuleCourseController;
+use App\Http\Controllers\UnityController;
+use App\Http\Controllers\CapsuleController;
 
 
 
@@ -50,6 +53,64 @@ Route::apiResource('quizzes', QuizController::class);
 
 // Routes protégées avec rôles
 Route::middleware('jwt.auth')->group(function () {
+
+
+    Route::prefix('unities')->group(function () {
+    Route::get('/', [UnityController::class, 'index']);
+    Route::get('/{id}', [UnityController::class, 'show']);
+    Route::post('/', [UnityController::class, 'store']);
+    Route::put('/{id}', [UnityController::class, 'update']);
+    Route::delete('/{id}', [UnityController::class, 'destroy']);
+
+    // 🔎 Recherche & filtrage
+    Route::get('/search', [UnityController::class, 'search']);
+    Route::get('/capsule/{capsuleId}', [UnityController::class, 'getByCapsule']);
+    Route::get('/capsule/{capsuleId}/count', [UnityController::class, 'countByCapsule']);
+    Route::get('/type/{type}', [UnityController::class, 'getByType']);
+});
+
+
+    Route::prefix('capsules')->group(function () {
+    Route::get('/', [CapsuleController::class, 'index']);
+    Route::get('/{id}', [CapsuleController::class, 'show']);
+    Route::post('/', [CapsuleController::class, 'store']);
+    Route::put('/{id}', [CapsuleController::class, 'update']);
+    Route::delete('/{id}', [CapsuleController::class, 'destroy']);
+
+    // Recherche & filtres
+    Route::get('/search', [CapsuleController::class, 'search']);
+    Route::get('/course/{courseId}', [CapsuleController::class, 'getByCourse']);
+
+    // Relations
+    Route::get('/{id}/unities', [CapsuleController::class, 'getUnities']);
+    Route::get('/{id}/quizzes', [CapsuleController::class, 'getQuizzes']);
+    Route::get('/{id}/stats', [CapsuleController::class, 'getStats']);
+});
+
+
+    Route::prefix('modules')->group(function () {
+
+    // Lister tous les modules
+    Route::get('/', [ModuleCourseController::class, 'index']);
+
+    // Afficher un module spécifique
+    Route::get('/{id}', [ModuleCourseController::class, 'show']);
+
+    // Créer un nouveau module
+    Route::post('/', [ModuleCourseController::class, 'store']);
+
+    // Mettre à jour un module
+    Route::put('/{id}', [ModuleCourseController::class, 'update']);
+
+    // Supprimer un module
+    Route::delete('/{id}', [ModuleCourseController::class, 'destroy']);
+
+    // Récupérer tous les modules d’un cours spécifique
+    Route::get('/course/{courseId}', [ModuleCourseController::class, 'getModulesByCourse']);
+
+    // Lister tous les quizzes d’un module
+    Route::get('/{id}/quizzes', [ModuleCourseController::class, 'getQuizzes']);
+});
 
 
 
@@ -198,6 +259,29 @@ Route::prefix('devoirs')->group(function () {
     Route::post('/{id}/demarrer', [ReunionController::class, 'demarrer']);
     Route::post('/{id}/terminer', [ReunionController::class, 'terminer']);
     Route::post('/{id}/annuler', [ReunionController::class, 'annuler']);
+
+
+
+    // ---------------------
+// Routes utilisateur
+// ---------------------
+    Route::prefix('quizzes')->group(function () {
+
+    // Liste des quiz disponibles pour l'utilisateur
+    Route::get('/available', [QuizController::class, 'getAvailableQuizzes']);
+
+    // Quiz par module
+    Route::get('/module/{moduleId}', [QuizController::class, 'getQuizzesByModule']);
+
+    // Questions d’un quiz
+    Route::get('/{id}/questions', [QuizController::class, 'getQuestions']);
+
+    // Correction d’un quiz passé
+    Route::get('/{id}/correction', [QuizController::class, 'getCorrection'])->middleware('auth:sanctum');
+
+    // Historique des quiz passés par l'utilisateur
+    Route::get('/history', [QuizController::class, 'getHistory'])->middleware('auth:sanctum');
+});
 
 
 

@@ -32,6 +32,7 @@ class Quiz extends Model
         'aleatoire_questions',// Ordre aléatoire des questions (nouveau)
         'correction_auto',    // Correction automatique (nouveau - cf cahier des charges)
         'certificat_id',      // Référence au certificat (nouveau - cf cahier des charges)
+        'capsule_id',         // Référence à la capsule (nouveau - cf cahier des charges)
     ];
 
     /**
@@ -97,4 +98,18 @@ class Quiz extends Model
         return $this->belongsTo(ModuleCourse::class, 'module_id'); 
         // 'module_id' doit être la colonne dans la table quizzes qui référence module_courses.id
     }
+
+    public function questionsQuizz()
+    {
+        return $this->hasMany(Question::class);
+    }
+
+    // Un quiz appartient à une capsule
+    public function capsule()
+    {
+        return $this->belongsTo(Capsule::class);
+    }
+
+
+    
 }
