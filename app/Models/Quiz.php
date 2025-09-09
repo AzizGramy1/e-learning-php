@@ -56,14 +56,7 @@ class Quiz extends Model
         return $this->belongsTo(Cours::class);
     }
 
-    /**
-     * Relation avec les questions.
-     */
-    public function questions()
-    {
-        return $this->hasMany(Question::class);
-    }
-
+ 
     /**
      * Relation avec le certificat (cf cahier des charges).
      */
@@ -109,6 +102,11 @@ class Quiz extends Model
     {
         return $this->belongsTo(Capsule::class);
     }
+
+    public function questions()
+{
+    return $this->hasMany(QuestionQuizz::class, 'quiz_id');
+}
 
 
     

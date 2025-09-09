@@ -18,6 +18,10 @@ class QuestionQuizz extends Model
         'points',            // Nombre de points attribués
         'options',           // Options possibles (JSON si QCM)
         'reponse_correcte',  // Bonne réponse (ou tableau de réponses)
+        'reponse_1',         
+        'reponse_2',
+        'reponse_3',
+        'reponse_4',
     ];
 
     protected $casts = [

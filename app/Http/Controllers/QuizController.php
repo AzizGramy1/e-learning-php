@@ -263,4 +263,59 @@ class QuizController extends Controller
             'data' => $results
         ]);
     }
+
+/**
+ * POST /quizzes/{quizId}/questions/{questionId}/check
+ * Vérifie la réponse d'une question du quiz
+ */
+public function checkQuestionAnswer(Request $request, $quizId, $questionId)
+{
+    $request->validate([
+        'reponse' => 'required|string'
+    ]);
+
+    // Vérifier si le quiz existe
+    $quiz = \App\Models\Quiz::find($quizId);
+    if (!$quiz) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Quiz introuvable'
+        ], 404);
+    }
+
+    // Récupérer la question
+    $question = $quiz->questions()->find($questionId);
+    if (!$question) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Question introuvable'
+        ], 404);
+    }
+
+    $userAnswer = trim($request->input('reponse'));
+
+    // ✅ Réponses correctes (stockées en JSON ou texte simple)
+    $correctAnswers = is_array($question->reponse_correcte)
+        ? $question->reponse_correcte
+        : [$question->reponse_correcte];
+
+    $isCorrect = in_array($userAnswer, $correctAnswers);
+
+    return response()->json([
+        'success' => true,
+        'quiz_id' => $quiz->id,
+        'question_id' => $question->id,
+        'userAnswer' => $userAnswer,
+        'correct' => $isCorrect,
+        'expected' => $correctAnswers,
+        'points' => $isCorrect ? $question->points : 0,
+        'options' => [
+            $question->reponse_1,
+            $question->reponse_2,
+            $question->reponse_3,
+            $question->reponse_4,
+        ]
+    ]);
+}
+
 }

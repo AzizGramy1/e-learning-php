@@ -18,6 +18,7 @@ use App\Http\Controllers\RessourceDevoirController;
 use App\Http\Controllers\ModuleCourseController;
 use App\Http\Controllers\UnityController;
 use App\Http\Controllers\CapsuleController;
+use App\Http\Controllers\QuestionQuizzController;
 
 
 
@@ -53,6 +54,39 @@ Route::apiResource('quizzes', QuizController::class);
 
 // Routes protégées avec rôles
 Route::middleware('jwt.auth')->group(function () {
+
+   // Gestion des questions d’un quiz
+Route::prefix('quizzes/{quizId}/questions')->group(function () {
+    Route::get('/', [QuestionQuizzController::class, 'index']);         // ✅ Liste des questions d’un quiz
+    Route::post('/', [QuestionQuizzController::class, 'store']);        // ✅ Ajouter une question
+    Route::get('/{id}', [QuestionQuizzController::class, 'show']);      // ✅ Afficher une question
+    Route::put('/{id}', [QuestionQuizzController::class, 'update']);    // ✅ Modifier une question
+    Route::delete('/{id}', [QuestionQuizzController::class, 'destroy']); // ✅ Supprimer une question
+
+    // Vérification de la réponse à une question
+    Route::post('/{id}/check', [QuestionQuizzController::class, 'checkAnswer']);
+});
+
+    // Routes REST de base pour les Quiz
+Route::get('/quizzes', [QuizController::class, 'index']);             // Liste des quizzes
+Route::post('/quizzes', [QuizController::class, 'store']);            // Créer un quiz
+Route::get('/quizzes/{id}', [QuizController::class, 'show']);         // Afficher un quiz
+Route::put('/quizzes/{id}', [QuizController::class, 'update']);       // Modifier un quiz
+Route::delete('/quizzes/{id}', [QuizController::class, 'destroy']);   // Supprimer un quiz
+
+// Routes personnalisées
+Route::get('/quizzes/module/{moduleId}', [QuizController::class, 'getQuizzesByModule']);  
+Route::get('/quizzes/{id}/questions', [QuizController::class, 'getQuestions']);           
+Route::get('/quizzes/{id}/correction', [QuizController::class, 'getCorrection']);         
+Route::get('/quizzes/available', [QuizController::class, 'getAvailableQuizzes']);         
+Route::get('/quizzes/history', [QuizController::class, 'getHistory']);                   
+
+// Vérification d’une réponse à une question
+Route::post(
+    '/quizzes/{quizId}/questions/{questionId}/check',
+    [QuizController::class, 'checkQuestionAnswer']
+);
+
 
 
     Route::prefix('unities')->group(function () {
